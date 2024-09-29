@@ -8,6 +8,7 @@ highspy = "*"
 psutil = "*"
 gurobipy = "*"
 setuptools = "*"
+solver-arena = {file = ".", editable = true}
 
 [dev-packages]
 
