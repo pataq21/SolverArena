@@ -1,5 +1,7 @@
-from solvers.gurobi_solver import GurobiSolver
-from solvers.highs_solver import HiGHSSolver
+
+
+from solver_arena.solvers.gurobi_solver import GurobiSolver
+from solver_arena.solvers.highs_solver import HiGHSSolver
 
 
 class SolverFactory:

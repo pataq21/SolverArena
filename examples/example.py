@@ -1,4 +1,6 @@
-from run import run_models, save_results_to_csv
+
+
+from solver_arena.run import run_models, save_results_to_csv
 
 
 if __name__ == "__main__":

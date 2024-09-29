@@ -1,7 +1,7 @@
 import gurobipy as gp
 import psutil
 
-from solvers.solver import Solver
+from solver_arena.solvers.solver import Solver
 
 
 class GurobiSolver(Solver):

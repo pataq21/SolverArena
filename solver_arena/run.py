@@ -2,7 +2,7 @@ from datetime import datetime
 import os
 import csv
 
-from solvers.solver_factory import SolverFactory
+from solver_arena.solvers.solver_factory import SolverFactory
 
 
 def run_models(mps_files, solvers):
