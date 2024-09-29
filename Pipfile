@@ -5,9 +5,9 @@ name = "pypi"
 
 [packages]
 highspy = "*"
-pyomo = "*"
 psutil = "*"
 gurobipy = "*"
+setuptools = "*"
 
 [dev-packages]
 
