@@ -10,7 +10,7 @@ def run_models(mps_files, solvers):
 
     for mps_file in mps_files:
         for solver_name in solvers:
-            print(f"Ejecutando {solver_name} en {mps_file}...")
+            print(f"Running {solver_name} in {mps_file}...")
 
             solver = SolverFactory.get_solver(solver_name)
 
@@ -21,7 +21,7 @@ def run_models(mps_files, solvers):
                 result["solver"] = solver_name
                 results.append(result)
             except Exception as e:
-                print(f"Error al ejecutar {solver_name} en {mps_file}: {str(e)}")
+                print(f"Error when running {solver_name} in {mps_file}: {str(e)}")
                 results.append(
                     {
                         "model": os.path.basename(mps_file),
@@ -29,6 +29,7 @@ def run_models(mps_files, solvers):
                         "status": "error",
                         "objective_value": None,
                         "runtime": None,
+                        "memory_used_MB": None,
                         "error": str(e),
                     }
                 )
@@ -43,7 +44,17 @@ def save_results_to_csv(results):
 
     if not os.path.exists("results"):
         os.makedirs("results")
-    fieldnames = ["model", "solver", "status", "objective_value", "runtime", "error"]
+    fieldnames = [
+        "model",
+        "solver",
+        "status",
+        "objective_value",
+        "runtime",
+        "memory_before_MB",
+        "memory_after_MB",
+        "memory_used_MB",
+        "error",
+    ]
 
     with open(output_file, mode="w", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
@@ -55,11 +66,8 @@ def save_results_to_csv(results):
 if __name__ == "__main__":
     mps_files = ["mps_files/model_dataset100.mps"]
 
-    solvers = ["highs"]
+    solvers = ["highs", "gurobi"]
 
     results = run_models(mps_files, solvers)
-
-    for result in results:
-        print(result)
 
     save_results_to_csv(results)
