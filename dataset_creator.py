@@ -1,7 +1,6 @@
 import json
 import random
 
-
 def generate_dictionary_and_list(n):
     # Generate the table capacities, ensuring they sum to n
     table_capacities = []
@@ -38,7 +37,7 @@ def generate_dictionary_and_list(n):
 
 
 if __name__ == "__main__":
-    total_people = 6000
+    total_people = 100
     dataset = generate_dictionary_and_list(total_people)
-    with open(f"datasets/dataset{total_people}b.json", "w") as json_file:
+    with open(f"datasets/dataset{total_people}.json", "w") as json_file:
         json.dump(dataset, json_file, indent=4)

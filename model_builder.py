@@ -98,10 +98,10 @@ def build_model(num_groups, num_tables, group_sizes, table_capacities, people_gr
 def main(dataset_name):
     num_groups, num_tables, group_sizes, table_capacities, people_groups = create_data(dataset_name)
     model = build_model(num_groups, num_tables, group_sizes, table_capacities, people_groups)
-    model.write(f"models/model_{dataset_name}b.mps", io_options={"symbolic_solver_labels": True})
+    model.write(f"mps_files/model_{dataset_name}.mps", io_options={"symbolic_solver_labels": True})
     print("done")
 
 
 if __name__ == "__main__":
-    dataset_name = "dataset6000b"
+    dataset_name = "dataset100"
     main(dataset_name)

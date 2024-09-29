@@ -1,0 +1,2 @@
+model,solver,status,objective_value,runtime,error
+model_dataset100.mps,highs,HighsModelStatus.kOptimal,3.0,18.296202300000004,
