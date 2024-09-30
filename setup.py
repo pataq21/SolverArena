@@ -10,6 +10,7 @@ setup(
         'highspy',
         'psutil',
         'gurobipy',
+        'ortools'
     ],
     entry_points={
     },
