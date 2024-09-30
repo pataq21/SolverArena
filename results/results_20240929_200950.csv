@@ -1,3 +1,0 @@
-model,solver,status,objective_value,runtime,memory_before_MB,memory_after_MB,memory_used_MB,error
-model_dataset100.mps,highs,HighsModelStatus.kOptimal,3.0,19.42695960000856,29.5390625,40.2578125,10.71875,
-model_dataset100.mps,gurobi,OPTIMAL,3.0,0.26399993896484375,44.22265625,54.8125,10.58984375,

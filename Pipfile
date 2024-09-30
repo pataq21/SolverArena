@@ -9,6 +9,7 @@ psutil = "*"
 gurobipy = "*"
 setuptools = "*"
 solver-arena = {file = ".", editable = true}
+ortools = "*"
 
 [dev-packages]
 
