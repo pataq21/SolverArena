@@ -1,3 +1,4 @@
+import time
 import gurobipy as gp
 import psutil
 
@@ -11,10 +12,11 @@ class GurobiSolver(Solver):
     def solve(self, mps_file, time_limit=1500):
         model = gp.read(mps_file)
         model.Params.TimeLimit = time_limit
-        memory_before = psutil.Process().memory_info().rss / (1024 * 1024)
         
+        start_time = time.time()
+        memory_before = psutil.Process().memory_info().rss / (1024 * 1024)
         model.optimize()
-
+        end_time = time.time()
         memory_after = psutil.Process().memory_info().rss / (1024 * 1024)
 
         if model.status == gp.GRB.OPTIMAL:
@@ -24,7 +26,7 @@ class GurobiSolver(Solver):
             model_status = model.status
             obj_value = None
 
-        run_time = model.Runtime
+        run_time = end_time - start_time
 
         self.result = {
             "status": model_status,

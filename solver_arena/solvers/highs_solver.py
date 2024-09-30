@@ -1,3 +1,4 @@
+import time
 import highspy
 import psutil
 
@@ -12,13 +13,17 @@ class HiGHSSolver(Solver):
         highs = highspy.Highs()
         highs.readModel(mps_file)
         highs.setOptionValue("time_limit", time_limit)
+        highs.setOptionValue("log_to_console", False)
+
+        start_time = time.time()
         memory_before = psutil.Process().memory_info().rss / (1024 * 1024)
         highs.run()
+        end_time = time.time()
         memory_after = psutil.Process().memory_info().rss / (1024 * 1024)
 
         model_status = highs.getModelStatus()
         obj_value = highs.getObjectiveValue()
-        run_time = highs.getRunTime()
+        run_time = end_time - start_time
 
         self.result = {
             "status": model_status,

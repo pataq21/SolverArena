@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7bf50f914ba710988a33d79e5a8f8a364357b54cbeeeba339a35e5aa521f4388"
+            "sha256": "0db40ad675e68864bbc243090657166eb6bdeb8b5f6b78e15152c10ba3f16c35"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -327,6 +327,10 @@
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==1.16.0"
+        },
+        "solver-arena": {
+            "editable": true,
+            "file": "."
         },
         "tzdata": {
             "hashes": [

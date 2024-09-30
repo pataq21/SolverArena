@@ -1,3 +1,4 @@
+import time
 import psutil
 from ortools.linear_solver import pywraplp
 from ortools.linear_solver.python import model_builder
@@ -15,8 +16,10 @@ class GLOPSolver(Solver):
         solver = model_builder.ModelSolver('GLOP')
         solver.set_time_limit_in_seconds(time_limit)
 
+        start_time = time.time()
         memory_before = psutil.Process().memory_info().rss / (1024 * 1024)
         status = solver.solve(model)
+        end_time = time.time()
         memory_after = psutil.Process().memory_info().rss / (1024 * 1024)
 
         # Obtener resultados
@@ -25,7 +28,7 @@ class GLOPSolver(Solver):
         else:
             obj_value = None
 
-        run_time = solver.wall_time / 1000.0  # Convertir de milisegundos a segundos
+        run_time = end_time - start_time
 
         self.result = {
             "status": status,
