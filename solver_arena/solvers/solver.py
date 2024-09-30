@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 
+
 class Solver(ABC):
     @abstractmethod
-    def solve(self, mps_file):
+    def solve(self, mps_file, time_limit):
         pass
 
     @abstractmethod

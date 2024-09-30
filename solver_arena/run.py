@@ -5,7 +5,7 @@ import csv
 from solver_arena.solvers.solver_factory import SolverFactory
 
 
-def run_models(mps_files, solvers):
+def run_models(mps_files, solvers, time_limit=1500):
     results = []
 
     for mps_file in mps_files:
@@ -15,7 +15,7 @@ def run_models(mps_files, solvers):
             solver = SolverFactory.get_solver(solver_name)
 
             try:
-                solver.solve(mps_file)
+                solver.solve(mps_file, time_limit)
                 result = solver.get_results()
                 result["model"] = os.path.basename(mps_file)
                 result["solver"] = solver_name

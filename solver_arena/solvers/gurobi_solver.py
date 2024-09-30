@@ -8,11 +8,11 @@ class GurobiSolver(Solver):
     def __init__(self):
         self.result = None
 
-    def solve(self, mps_file):
+    def solve(self, mps_file, time_limit=1500):
         model = gp.read(mps_file)
-
+        model.Params.TimeLimit = time_limit
         memory_before = psutil.Process().memory_info().rss / (1024 * 1024)
-
+        
         model.optimize()
 
         memory_after = psutil.Process().memory_info().rss / (1024 * 1024)

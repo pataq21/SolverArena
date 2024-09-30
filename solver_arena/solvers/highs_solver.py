@@ -8,9 +8,10 @@ class HiGHSSolver(Solver):
     def __init__(self):
         self.result = None
 
-    def solve(self, mps_file):
+    def solve(self, mps_file, time_limit=1500):
         highs = highspy.Highs()
         highs.readModel(mps_file)
+        highs.setOptionValue("time_limit", time_limit)
         memory_before = psutil.Process().memory_info().rss / (1024 * 1024)
         highs.run()
         memory_after = psutil.Process().memory_info().rss / (1024 * 1024)

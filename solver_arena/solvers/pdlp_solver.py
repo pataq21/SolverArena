@@ -9,10 +9,11 @@ class PDLPSolver(Solver):
     def __init__(self):
         self.result = None
 
-    def solve(self, mps_file):
+    def solve(self, mps_file, time_limit=1500):
         model = model_builder.ModelBuilder()
         model.import_from_mps_file(mps_file)
         solver = model_builder.ModelSolver('PDLP')
+        solver.set_time_limit_in_seconds(time_limit)
 
         memory_before = psutil.Process().memory_info().rss / (1024 * 1024)
         status = solver.solve(model)
