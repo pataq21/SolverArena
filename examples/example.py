@@ -1,6 +1,6 @@
 
 
-from solver_arena.run import run_models, save_results_to_csv
+from solver_arena.run import run_models
 
 
 if __name__ == "__main__":
@@ -8,4 +8,3 @@ if __name__ == "__main__":
     solvers = ["highs", "glop", "pdlp", "scip"]
 
     results = run_models(mps_files, solvers)
-    save_results_to_csv(results)
