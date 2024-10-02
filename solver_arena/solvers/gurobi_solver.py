@@ -55,17 +55,15 @@ class GurobiSolver(Solver):
             FileNotFoundError: If the provided MPS file does not exist.
             ValueError: If an invalid option is passed in the options dictionary.
         """
-        # Create a new Gurobi model
-
         with gp.Env(empty=True) as env:
-            env.setParam('OutputFlag', 0)
-            env.setParam('LogToConsole', 0)
-            env.start()
+            env.setParam('OutputFlag', 0)  # Suppress output
+            env.start()  # Start the Gurobi environment
+
+            # Read the model into the environment
             with gp.read(mps_file, env) as model:
                 if options:
                     for key, value in options.items():
                         model.setParam(key, value)
-
                 current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 self.logger.info(f"[{current_time}] Running the Gurobi solver on {mps_file}...")
 
