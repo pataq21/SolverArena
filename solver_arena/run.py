@@ -1,71 +1,112 @@
 from datetime import datetime
 import os
 import csv
-
+import logging
+from typing import List, Dict, Optional
 from solver_arena.solvers.solver_factory import SolverFactory
 
+# Set up basic logging
+logging.basicConfig(level=logging.INFO)
 
-def run_models(mps_files, solvers, time_limit=1500):
-    results = []
 
+def run_models(mps_files: List[str],
+               solvers: List[str],
+               parameters: Optional[Dict[str, Dict]] = None,
+               output_dir: str = "results") -> List[Dict]:
+    """
+    Runs a set of solvers on given MPS files and records the results.
+
+    Args:
+        mps_files (list): A list of paths to MPS files representing optimization models.
+        solvers (list): A list of solver names (as strings) that will be used to solve the models.
+        parameters (dict, optional): A dictionary where keys are solver names and values are dictionaries 
+                                     of solver-specific options. If None, solvers are run with default settings.
+        output_dir (str, optional): Directory where the result CSV will be saved. Defaults to "results".
+
+    Returns:
+        list: A list of dictionaries with results for each model-solver pair.
+
+    Raises:
+        FileNotFoundError: If any MPS file does not exist.
+        ValueError: If an unsupported solver is provided.
+
+    This function also saves the results to a CSV file in the `output_dir` directory.
+    """
+    # Check if MPS files exist
+    for mps_file in mps_files:
+        if not os.path.isfile(mps_file):
+            raise FileNotFoundError(f"MPS file not found: {mps_file}")
+
+    # Create timestamp and output file path
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_file = initialize_csv(timestamp, output_dir)
 
-    output_file = f"results/results_{timestamp}.csv"
+    results = []
+    for mps_file in mps_files:
+        for solver_name in solvers:
+            result = run_solver_on_model(mps_file, solver_name, parameters)
+            results.append(result)
+            append_to_csv(output_file, result)
 
-    if not os.path.exists("results"):
-        os.makedirs("results")
+    return results
+
+
+def initialize_csv(timestamp: str, output_dir: str) -> str:
+    """Initializes the CSV file and writes the header."""
+    os.makedirs(output_dir, exist_ok=True)
+    output_file = os.path.join(output_dir, f"results_{timestamp}.csv")
+
     fieldnames = [
-        "model",
-        "solver",
-        "status",
-        "objective_value",
-        "runtime",
-        "memory_before_MB",
-        "memory_after_MB",
-        "memory_used_MB",
-        "error",
+        "model", "solver", "status", "objective_value", "runtime",
+        "memory_before_MB", "memory_after_MB", "memory_used_MB", "error"
     ]
 
     with open(output_file, mode="w", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writeheader()
 
-    for mps_file in mps_files:
-        for solver_name in solvers:
-            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            print(f"[{current_time}] Running {solver_name} in {mps_file}...")
-
-            solver = SolverFactory.get_solver(solver_name)
-
-            try:
-                solver.solve(mps_file, time_limit)
-                result = solver.get_results()
-                result["model"] = os.path.basename(mps_file)
-                result["solver"] = solver_name
-                results.append(result)
-            except Exception as e:
-                print(f"Error when running {solver_name} in {mps_file}: {str(e)}")
-                results.append(
-                    {
-                        "model": os.path.basename(mps_file),
-                        "solver": solver_name,
-                        "status": "error",
-                        "objective_value": None,
-                        "runtime": None,
-                        "memory_used_MB": None,
-                        "error": str(e),
-                    }
-                )
-            with open(output_file, mode='a', newline='') as file:
-                writer = csv.DictWriter(file, fieldnames=fieldnames)
-                writer.writerow(result)
-
-    return results
+    return output_file
 
 
-if __name__ == "__main__":
-    mps_files = ["mps_files/model_dataset100.mps"]
+def run_solver_on_model(mps_file: str, solver_name: str, parameters: Optional[Dict[str, Dict]]) -> Dict:
+    """Runs a solver on a given model and handles errors."""
 
-    solvers = ["highs", "gurobi"]
+    solver = SolverFactory.get_solver(solver_name)
 
-    results = run_models(mps_files, solvers)
+    try:
+        solver_params = parameters.get(solver_name) if parameters and solver_name in parameters else None
+        solver.solve(mps_file, solver_params) if solver_params else solver.solve(mps_file)
+
+        result = solver.get_results()
+        result.update({
+            "model": os.path.basename(mps_file),
+            "solver": solver_name
+        })
+
+    except Exception as e:
+        logging.error(f"Error when running {solver_name} on {mps_file}: {str(e)}")
+        result = {
+            "model": os.path.basename(mps_file),
+            "solver": solver_name,
+            "status": "error",
+            "objective_value": None,
+            "runtime": None,
+            "memory_before_MB": None,
+            "memory_after_MB": None,
+            "memory_used_MB": None,
+            "error": str(e),
+        }
+
+    return result
+
+
+def append_to_csv(output_file: str, result: Dict) -> None:
+    """Appends a result dictionary to the CSV file."""
+    fieldnames = [
+        "model", "solver", "status", "objective_value", "runtime",
+        "memory_before_MB", "memory_after_MB", "memory_used_MB", "error"
+    ]
+
+    with open(output_file, mode="a", newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writerow(result)
