@@ -42,8 +42,8 @@ def run_models(mps_files: List[str],
     output_file = initialize_csv(timestamp, output_dir)
 
     results = []
-    for mps_file in mps_files:
-        for solver_name in solvers:
+    for solver_name in solvers:
+        for mps_file in mps_files:
             result = run_solver_on_model(mps_file, solver_name, parameters)
             results.append(result)
             append_to_csv(output_file, result)

@@ -34,7 +34,8 @@ class GurobiSolver(Solver):
             dict: A dictionary containing the solver status and objective value.
         """
         model.optimize()  # Execute the solver
-        model_status = model.status
+        if model.status == gp.GRB.OPTIMAL:
+            model_status = "OPTIMAL"
         obj_value = model.objVal
 
         return {
