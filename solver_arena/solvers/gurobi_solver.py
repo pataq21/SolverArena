@@ -1,43 +1,85 @@
-import time
+from datetime import datetime
 import gurobipy as gp
-import psutil
+import logging
 
 from solver_arena.solvers.solver import Solver
+from solver_arena.solvers.utils import track_performance
 
 
 class GurobiSolver(Solver):
+    """
+    GurobiSolver is a class that interfaces with the Gurobi optimization solver.
+
+    Attributes:
+        result (dict): Stores the results of the optimization run.
+    """
+
     def __init__(self):
+        """
+        Initializes the solver with an empty result.
+        """
         self.result = None
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
 
-    def solve(self, mps_file, time_limit=1500):
-        model = gp.read(mps_file)
-        model.Params.TimeLimit = time_limit
-        model.Params.OutputFlag = 0
+    @track_performance
+    def run_gurobi(self, model):
+        """
+        Runs the Gurobi solver and tracks performance using the track_performance decorator.
 
-        start_time = time.time()
-        memory_before = psutil.Process().memory_info().rss / (1024 * 1024)
-        model.optimize()
-        end_time = time.time()
-        memory_after = psutil.Process().memory_info().rss / (1024 * 1024)
+        Args:
+            model (gurobipy.Model): The Gurobi model instance.
 
-        if model.status == gp.GRB.OPTIMAL:
-            model_status = "OPTIMAL"
-            obj_value = model.objVal
-        else:
-            model_status = model.status
-            obj_value = None
+        Returns:
+            dict: A dictionary containing the solver status and objective value.
+        """
+        model.optimize()  # Execute the solver
+        model_status = model.status
+        obj_value = model.objVal
 
-        run_time = end_time - start_time
-
-        self.result = {
+        return {
             "status": model_status,
             "objective_value": obj_value,
-            "runtime": run_time,
-            "solver": "gurobi",
-            "memory_before_MB": memory_before,
-            "memory_after_MB": memory_after,
-            "memory_used_MB": memory_after - memory_before,
+            "solver": "gurobi"
         }
 
+    def solve(self, mps_file, options=None):
+        """
+        Solves the optimization problem using the Gurobi solver.
+
+        Args:
+            mps_file (str): The path to the MPS file containing the model.
+            options (dict, optional): A dictionary of solver options to configure Gurobi.
+
+        Raises:
+            FileNotFoundError: If the provided MPS file does not exist.
+            ValueError: If an invalid option is passed in the options dictionary.
+        """
+        # Create a new Gurobi model
+
+        with gp.Env(empty=True) as env:
+            env.setParam('OutputFlag', 0)
+            env.setParam('LogToConsole', 0)
+            env.start()
+            with gp.read(mps_file, env) as model:
+                if options:
+                    for key, value in options.items():
+                        model.setParam(key, value)
+
+                current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                self.logger.info(f"[{current_time}] Running the Gurobi solver on {mps_file}...")
+
+                self.result = self.run_gurobi(model)
+
+                self.logger.info(f"Solver completed with status: {self.result['status']}.")
+
     def get_results(self):
+        """
+        Returns the result of the last solver run.
+
+        Returns:
+            dict: A dictionary containing the results of the solver run.
+        """
+        if self.result is None:
+            self.logger.warning("No problem has been solved yet. The result is empty.")
         return self.result

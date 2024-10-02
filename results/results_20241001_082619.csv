@@ -1,4 +1,0 @@
-model,solver,status,objective_value,runtime,memory_before_MB,memory_after_MB,memory_used_MB,error
-model_dataset600.mps,highs,HighsModelStatus.kOptimal,0.0,86.36234068870544,98.48828125,148.18359375,49.6953125,
-model_dataset600.mps,glop,SolveStatus.OPTIMAL,0.0,4.905636787414551,177.31640625,179.4453125,2.12890625,
-model_dataset600.mps,pdlp,SolveStatus.OPTIMAL,0.0,4.187423467636108,178.546875,182.8125,4.265625,
