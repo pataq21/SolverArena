@@ -1,13 +1,18 @@
 from datetime import datetime
+import pyscipopt as scip
 import logging
-
-from ortools.linear_solver.python import model_builder
-
 from solver_arena.solvers.solver import Solver
 from solver_arena.solvers.utils import track_performance
 
 
 class SCIPSolver(Solver):
+    """
+    SCIPSolver is a class that interfaces with the SCIP optimization solver using PySCIPOpt.
+
+    Attributes:
+        result (dict): Stores the results of the optimization run.
+    """
+
     def __init__(self):
         """
         Initializes the solver with an empty result.
@@ -17,25 +22,24 @@ class SCIPSolver(Solver):
         self.logger.setLevel(logging.INFO)
 
     @track_performance
-    def run_scip(self, scip, model):
+    def run_scip(self, model):
         """
         Runs the SCIP solver and tracks performance using the track_performance decorator.
 
         Args:
-            scip (ModelSolver): The SCIP solver instance.
-            model (ModelBuilder): The instance model.
+            model (pyscipopt.Model): The SCIP model instance.
 
         Returns:
             dict: A dictionary containing the solver status and objective value.
         """
-        model_status = scip.solve(model)
-
-        obj_value = scip.objective_value
+        model.optimize()  # Execute the solver
+        status = model.getStatus()
+        obj_value = model.getObjVal() if status == "optimal" else None
 
         return {
-            "status": model_status,
+            "status": status.upper(),
             "objective_value": obj_value,
-            "solver": "SCIP"
+            "solver": "scip"
         }
 
     def solve(self, mps_file, options=None):
@@ -50,23 +54,28 @@ class SCIPSolver(Solver):
             FileNotFoundError: If the provided MPS file does not exist.
             ValueError: If an invalid option is passed in the options dictionary.
         """
-        model = model_builder.ModelBuilder()
-        model.import_from_mps_file(mps_file)
-        scip = model_builder.ModelSolver('SCIP')
+        model = scip.Model()  # Create a new SCIP model
 
-        if options:
-            for key, value in options.items():
-                if key == 'time_limit':
-                    scip.set_time_limit_in_seconds(value)
-                else:
-                    self.logger.info(f"Parameter {key} is not implemented or it does not exist")
+        try:
+            # Load the MPS file
+            model.readProblem(mps_file)
+            model.setParam('display/verblevel', 0)
+            # Apply solver options if any
+            if options:
+                for key, value in options.items():
+                    model.setParam(key, value)
 
-        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.logger.info(f"[{current_time}] Running the SCIP solver on {mps_file}...")
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            self.logger.info(f"[{current_time}] Running the SCIP solver on {mps_file}...")
 
-        self.result = self.run_scip(scip, model)
+            # Run the SCIP solver and store the result
+            self.result = self.run_scip(model)
 
-        self.logger.info(f"Solver completed with status: {self.result['status']}.")
+            self.logger.info(f"Solver completed with status: {self.result['status']}.")
+
+        except FileNotFoundError:
+            self.logger.error(f"File {mps_file} not found.")
+            raise
 
     def get_results(self):
         """

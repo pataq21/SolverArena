@@ -1,5 +1,3 @@
-# setup.py
-
 from setuptools import setup, find_packages
 
 setup(
@@ -7,15 +5,20 @@ setup(
     version='0.1',
     packages=find_packages(),
     install_requires=[
-        'highspy',
         'memory-profiler',
-        'gurobipy',
-        'ortools'
     ],
-    entry_points={
+    extras_require={
+        'highs': ['highspy'],
+        'gurobi': ['gurobipy'],
+        'scip': ['pyscipopt'],
+        'ortools': ['ortools'],
+        'all_solvers': ['highspy', 'gurobipy', 'pyscipopt', 'ortools']
     },
     description='A library to run and compare optimization models',
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
     author='Javier Berga García',
     author_email='pataq21@gmail.com',
     url='https://github.com/pataq21/SolverArena',
+    license='MIT',
 )

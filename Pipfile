@@ -10,6 +10,7 @@ setuptools = "*"
 ortools = "*"
 solver-arena = {file = ".", editable = true}
 memory-profiler = "*"
+pyscipopt = "*"
 
 [dev-packages]
 
