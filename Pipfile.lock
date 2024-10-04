@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "0db40ad675e68864bbc243090657166eb6bdeb8b5f6b78e15152c10ba3f16c35"
+            "sha256": "712e3643402c1dd3b3e12b5544abb12140c04d984f7b5a5cc124f91bfaeaef7b"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -115,6 +115,15 @@
             ],
             "markers": "python_version >= '3.8' and python_version < '4.0'",
             "version": "==4.2.0"
+        },
+        "memory-profiler": {
+            "hashes": [
+                "sha256:400348e61031e3942ad4d4109d18753b2fb08c2f6fb8290671c5513a34182d84",
+                "sha256:4e5b73d7864a1d1292fb76a03e82a3e78ef934d06828a698d9dada76da2067b0"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.5'",
+            "version": "==0.61.0"
         },
         "numpy": {
             "hashes": [

@@ -8,7 +8,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'highspy',
-        'psutil',
+        'memory-profiler',
         'gurobipy',
         'ortools'
     ],

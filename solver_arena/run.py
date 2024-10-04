@@ -57,8 +57,7 @@ def initialize_csv(timestamp: str, output_dir: str) -> str:
     output_file = os.path.join(output_dir, f"results_{timestamp}.csv")
 
     fieldnames = [
-        "model", "solver", "status", "objective_value", "runtime",
-        "memory_before_MB", "memory_after_MB", "memory_used_MB", "error"
+        "model", "solver", "status", "objective_value", "runtime", "memory_used_MB", "error"
     ]
 
     with open(output_file, mode="w", newline="") as file:
@@ -91,8 +90,6 @@ def run_solver_on_model(mps_file: str, solver_name: str, parameters: Optional[Di
             "status": "error",
             "objective_value": None,
             "runtime": None,
-            "memory_before_MB": None,
-            "memory_after_MB": None,
             "memory_used_MB": None,
             "error": str(e),
         }
@@ -103,8 +100,7 @@ def run_solver_on_model(mps_file: str, solver_name: str, parameters: Optional[Di
 def append_to_csv(output_file: str, result: Dict) -> None:
     """Appends a result dictionary to the CSV file."""
     fieldnames = [
-        "model", "solver", "status", "objective_value", "runtime",
-        "memory_before_MB", "memory_after_MB", "memory_used_MB", "error"
+        "model", "solver", "status", "objective_value", "runtime", "memory_used_MB", "error"
     ]
 
     with open(output_file, mode="a", newline='') as file:

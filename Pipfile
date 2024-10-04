@@ -5,11 +5,11 @@ name = "pypi"
 
 [packages]
 highspy = "*"
-psutil = "*"
 gurobipy = "*"
 setuptools = "*"
 ortools = "*"
 solver-arena = {file = ".", editable = true}
+memory-profiler = "*"
 
 [dev-packages]
 
