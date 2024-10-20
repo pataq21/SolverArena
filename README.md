@@ -4,16 +4,39 @@
 
 ## Installation
 
-For now, the library is available on GitHub. To install it, use the following command:
+To install the library from PyPI, you can use `pipenv` with one of the following commands:
 
-```bash
-pipenv install git+https://github.com/pataq21/SolverArena.git
-```
+1. **Basic Installation** (only the main library):
+
+    ```bash
+    pipenv install arenasolver
+    ```
+
+2. **Installation with a Specific Solver**:
+
+    If you want to install the library along with a specific solver, you can use:
+
+    ```bash
+    pipenv install arenasolver[highs]      # To install with Highs
+    pipenv install arenasolver[gurobi]     # To install with Gurobi
+    pipenv install arenasolver[scip]       # To install with SCIP
+    pipenv install arenasolver[ortools]    # To install with OR-Tools
+    ```
+
+3. **Installation with All Solvers**:
+
+    If you want to install the library along with all available solvers, use:
+
+    ```bash
+    pipenv install arenasolver[all_solvers]
+    ```
 
 ## Usage
-To use the library, you can refer to the example folder, which contains a basic implementation. Here is an example of how to use arena_solver:
+
+To use the library, you can refer to the example folder, which contains a basic implementation. Here is an example of how to use `arena_solver`:
+
 ```python
-from arena_solver import run_models
+from arenasolver.run import run_models
 
 # Define the list of MPS files and solvers
 mps_files = ['path/to/model1.mps', 'path/to/model2.mps']
@@ -29,13 +52,3 @@ parameters = {
 # Run the models
 results = run_models(mps_files, solvers, parameters)
 print(results)
-```
-
-## Main Functions
-run_models: Executes multiple solvers on MPS files and save performance results as csv.
-
-## Contributions
-Contributions are welcome. If you would like to contribute, please open an issue or a pull request on the GitHub repository.
-
-## License
-This library is licensed under the MIT License.
