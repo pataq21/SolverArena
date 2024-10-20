@@ -16,11 +16,11 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.8'  # Especifica la versión de Python que necesitas
+        python-version: '3.11'  # Especifica la versión de Python que necesitas
 
     - name: Install dependencies
       run: |
-        pip install setuptools wheel twine
+        pip install setuptools wheel twine build  # Instala build junto con setuptools y wheel
 
     - name: Clean previous distributions
       run: |
