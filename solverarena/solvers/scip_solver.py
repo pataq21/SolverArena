@@ -1,8 +1,8 @@
 from datetime import datetime
 import pyscipopt as scip
 import logging
-from solver_arena.solvers.solver import Solver
-from solver_arena.solvers.utils import track_performance
+from solverarena.solvers.solver import Solver
+from solverarena.solvers.utils import track_performance
 
 
 class SCIPSolver(Solver):

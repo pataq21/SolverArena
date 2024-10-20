@@ -1,10 +1,10 @@
 
 
-from solver_arena.solvers.glop_solver import GLOPSolver
-from solver_arena.solvers.gurobi_solver import GurobiSolver
-from solver_arena.solvers.highs_solver import HiGHSSolver
-from solver_arena.solvers.pdlp_solver import PDLPSolver
-from solver_arena.solvers.scip_solver import SCIPSolver
+from solverarena.solvers.glop_solver import GLOPSolver
+from solverarena.solvers.gurobi_solver import GurobiSolver
+from solverarena.solvers.highs_solver import HiGHSSolver
+from solverarena.solvers.pdlp_solver import PDLPSolver
+from solverarena.solvers.scip_solver import SCIPSolver
 
 
 class SolverFactory:

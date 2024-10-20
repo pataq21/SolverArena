@@ -4,7 +4,7 @@ import os
 import csv
 import logging
 from typing import List, Dict, Optional
-from solver_arena.solvers.solver_factory import SolverFactory
+from solverarena.solvers.solver_factory import SolverFactory
 
 # Set up basic logging
 logging.basicConfig(level=logging.INFO)

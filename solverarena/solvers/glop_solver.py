@@ -3,8 +3,8 @@ import logging
 
 from ortools.linear_solver.python import model_builder
 
-from solver_arena.solvers.solver import Solver
-from solver_arena.solvers.utils import track_performance
+from solverarena.solvers.solver import Solver
+from solverarena.solvers.utils import track_performance
 
 
 class GLOPSolver(Solver):

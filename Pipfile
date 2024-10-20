@@ -8,7 +8,7 @@ highspy = "*"
 gurobipy = "*"
 setuptools = "*"
 ortools = "*"
-solver-arena = {file = ".", editable = true}
+solverarena = {file = ".", editable = true}
 memory-profiler = "*"
 pyscipopt = "*"
 
