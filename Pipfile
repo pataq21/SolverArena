@@ -11,6 +11,7 @@ ortools = "*"
 solverarena = {file = ".", editable = true}
 memory-profiler = "*"
 pyscipopt = "*"
+twine = "*"
 
 [dev-packages]
 
