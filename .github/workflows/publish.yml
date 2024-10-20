@@ -1,34 +1,38 @@
-name: Publish Package
+name: Publish to PyPI
 
 on:
   push:
     tags:
-      - 'v*'
+      - 'v*.*.*'  # Disparar el flujo de trabajo cuando se empuje un nuevo tag de versión
 
 jobs:
   publish:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'  # Especifica la versión de Python que necesitas
 
-      - name: Install dependencies
-        run: |
-          pip install setuptools wheel twine
+    - name: Install dependencies
+      run: |
+        pip install setuptools wheel twine
 
-      - name: Build package
-        run: |
-          python setup.py sdist bdist_wheel
+    - name: Clean previous distributions
+      run: |
+        rm -rf dist/*  # Elimina todos los archivos en la carpeta dist
 
-      - name: Publish to PyPI
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        run: |
-          twine upload dist/*
+    - name: Build package
+      run: |
+        python -m build  # Construye el paquete usando python -m build
+
+    - name: Publish to PyPI
+      env:
+        TWINE_USERNAME: __token__  # Para PyPI, si usas token
+        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}  # Token almacenado en Secrets
+      run: |
+        twine upload dist/*  # Sube las distribuciones a PyPI
