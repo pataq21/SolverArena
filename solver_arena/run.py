@@ -1,4 +1,5 @@
 from datetime import datetime
+import gc
 import os
 import csv
 import logging
@@ -47,7 +48,7 @@ def run_models(mps_files: List[str],
             result = run_solver_on_model(mps_file, solver_name, parameters)
             results.append(result)
             append_to_csv(output_file, result)
-
+            gc.collect()
     return results
 
 

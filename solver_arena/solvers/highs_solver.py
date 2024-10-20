@@ -68,7 +68,7 @@ class HiGHSSolver(Solver):
         self.logger.info(f"[{current_time}] Running the HiGHS solver on {mps_file}...")
 
         self.result = self.run_highs(highs)
-
+        del highs
         self.logger.info(f"Solver completed with status: {self.result['status']}.")
 
     def get_results(self):

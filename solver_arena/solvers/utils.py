@@ -15,10 +15,9 @@ def track_performance(func):
     def wrapper(*args, **kwargs):
 
         start_time = time.time()
-        mem_usage, result = memory_usage((func, args, kwargs), interval=0.1, retval=True)
+        initial_memory_used = memory_usage(max_usage=True)
+        max_memory_used, result = memory_usage((func, args, kwargs), interval=0.1, retval=True, max_usage=True)
         end_time = time.time()
-        initial_memory_used = mem_usage[0]
-        max_memory_used = max(mem_usage)
         memory_diff = max_memory_used - initial_memory_used
         runtime = end_time - start_time
 
