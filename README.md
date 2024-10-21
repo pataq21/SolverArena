@@ -1,6 +1,6 @@
-# Arena Solver
+# Solver Arena
 
-**Arena Solver** is an open-source library designed to facilitate the performance comparison of different solvers in optimization problems. The library abstracts the implementation of solvers, allowing users to input a list of MPS files and choose the desired solvers with their respective parameters.
+**Solver Arena** is an open-source library designed to facilitate the performance comparison of different solvers in optimization problems. The library abstracts the implementation of solvers, allowing users to input a list of MPS files and choose the desired solvers with their respective parameters.
 
 ## Installation
 
@@ -9,7 +9,7 @@ To install the library from PyPI, you can use `pipenv` with one of the following
 1. **Basic Installation** (only the main library):
 
     ```bash
-    pipenv install arenasolver
+    pipenv install solverarena
     ```
 
 2. **Installation with a Specific Solver**:
@@ -17,10 +17,10 @@ To install the library from PyPI, you can use `pipenv` with one of the following
     If you want to install the library along with a specific solver, you can use:
 
     ```bash
-    pipenv install arenasolver[highs]      # To install with Highs
-    pipenv install arenasolver[gurobi]     # To install with Gurobi
-    pipenv install arenasolver[scip]       # To install with SCIP
-    pipenv install arenasolver[ortools]    # To install with OR-Tools
+    pipenv install solverarena[highs]      # To install with Highs
+    pipenv install solverarena[gurobi]     # To install with Gurobi
+    pipenv install solverarena[scip]       # To install with SCIP
+    pipenv install solverarena[ortools]    # To install with OR-Tools
     ```
 
 3. **Installation with All Solvers**:
@@ -28,7 +28,7 @@ To install the library from PyPI, you can use `pipenv` with one of the following
     If you want to install the library along with all available solvers, use:
 
     ```bash
-    pipenv install arenasolver[all_solvers]
+    pipenv install solverarena[all_solvers]
     ```
 
 ## Usage
@@ -52,3 +52,4 @@ parameters = {
 # Run the models
 results = run_models(mps_files, solvers, parameters)
 print(results)
+```
