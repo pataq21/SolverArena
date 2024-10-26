@@ -11,17 +11,15 @@ logging.basicConfig(level=logging.INFO)
 
 
 def run_models(mps_files: List[str],
-               solvers: List[str],
-               parameters: Optional[Dict[str, Dict]] = None,
+               solvers: Dict[str, Dict],
                output_dir: str = "results") -> List[Dict]:
     """
     Runs a set of solvers on given MPS files and records the results.
 
     Args:
         mps_files (list): A list of paths to MPS files representing optimization models.
-        solvers (list): A list of solver names (as strings) that will be used to solve the models.
-        parameters (dict, optional): A dictionary where keys are solver names and values are dictionaries 
-                                     of solver-specific options. If None, solvers are run with default settings.
+        parameters (dict): A dictionary where keys are solver names and values are dictionaries of solver-specific 
+                        options. If values of the keys is None, solvers are run with default settings.
         output_dir (str, optional): Directory where the result CSV will be saved. Defaults to "results".
 
     Returns:
@@ -43,9 +41,9 @@ def run_models(mps_files: List[str],
     output_file = initialize_csv(timestamp, output_dir)
 
     results = []
-    for solver_name in solvers:
+    for execution_alias, parameters in solvers.items():
         for mps_file in mps_files:
-            result = run_solver_on_model(mps_file, solver_name, parameters)
+            result = run_solver_on_model(mps_file, execution_alias, parameters)
             results.append(result)
             append_to_csv(output_file, result)
             gc.collect()
@@ -68,26 +66,28 @@ def initialize_csv(timestamp: str, output_dir: str) -> str:
     return output_file
 
 
-def run_solver_on_model(mps_file: str, solver_name: str, parameters: Optional[Dict[str, Dict]]) -> Dict:
+def run_solver_on_model(mps_file: str, execution_alias: str, parameters: Dict[str, Dict]) -> Dict:
     """Runs a solver on a given model and handles errors."""
 
-    solver = SolverFactory.get_solver(solver_name)
+    solver = SolverFactory.get_solver(parameters['solver_name'])
 
     try:
-        solver_params = parameters.get(solver_name) if parameters and solver_name in parameters else None
+        solver_params = {k: v for k, v in parameters.items() if k != "solver_name"}
         solver.solve(mps_file, solver_params) if solver_params else solver.solve(mps_file)
 
         result = solver.get_results()
         result.update({
             "model": os.path.basename(mps_file),
-            "solver": solver_name
+            "solver": parameters['solver_name'],
+            "execution_alias": execution_alias
         })
 
     except Exception as e:
-        logging.error(f"Error when running {solver_name} on {mps_file}: {str(e)}")
+        logging.error(f"Error when running {parameters['solver_name']} on {mps_file}: {str(e)}")
         result = {
             "model": os.path.basename(mps_file),
-            "solver": solver_name,
+            "solver": parameters['solver_name'],
+            "execution_alias": execution_alias,
             "status": "error",
             "objective_value": None,
             "runtime": None,
@@ -101,7 +101,7 @@ def run_solver_on_model(mps_file: str, solver_name: str, parameters: Optional[Di
 def append_to_csv(output_file: str, result: Dict) -> None:
     """Appends a result dictionary to the CSV file."""
     fieldnames = [
-        "model", "solver", "status", "objective_value", "runtime", "memory_used_MB", "error"
+        "execution_alias", "model", "solver", "status", "objective_value", "runtime", "memory_used_MB", "error"
     ]
 
     with open(output_file, mode="a", newline='') as file:
