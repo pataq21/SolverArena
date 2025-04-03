@@ -36,20 +36,27 @@ To install the library from PyPI, you can use `pipenv` with one of the following
 To use the library, you can refer to the example folder, which contains a basic implementation. Here is an example of how to use `arena_solver`:
 
 ```python
-from arenasolver.run import run_models
+from solverarena.run import run_models
 
-# Define the list of MPS files and solvers
-mps_files = ['path/to/model1.mps', 'path/to/model2.mps']
-solvers = ['solver1', 'solver2']
-parameters = {
-    "solver1": {
-        "presolve": "on",
-        "pdlp_native_termination": True,
-        "solver": "pdlp",
-    },
-}
+if __name__ == "__main__":
+    mps_files = [
+        "examples/mps_files/model_dataset100.mps",
+    ]
 
-# Run the models
-results = run_models(mps_files, solvers, parameters)
-print(results)
+    solvers = {
+        "highs_default": {
+            "solver_name": "highs",
+            "presolve": "on",
+            "time_limit": 3600,
+            "solver": "ipm"
+        },
+        "highs_no_presolve": {
+            "solver_name": "highs",
+            "presolve": "off",
+            "time_limit": 1800,
+            "solver": "simplex"
+        }
+    }
+
+    results = run_models(mps_files, solvers)
 ```
