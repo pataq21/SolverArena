@@ -1,24 +1,25 @@
-from datetime import datetime
-import gc
-import os
 import csv
+import gc
 import logging
-from typing import List, Dict, Optional
+import os
+from datetime import datetime
+from typing import Dict, List
+
 from solverarena.solvers.solver_factory import SolverFactory
 
 # Set up basic logging
 logging.basicConfig(level=logging.INFO)
 
 
-def run_models(mps_files: List[str],
-               solvers: Dict[str, Dict],
-               output_dir: str = "results") -> List[Dict]:
+def run_models(
+    mps_files: List[str], solvers: Dict[str, Dict], output_dir: str = "results"
+) -> List[Dict]:
     """
     Runs a set of solvers on given MPS files and records the results.
 
     Args:
         mps_files (list): A list of paths to MPS files representing optimization models.
-        parameters (dict): A dictionary where keys are solver names and values are dictionaries of solver-specific 
+        parameters (dict): A dictionary where keys are solver names and values are dictionaries of solver-specific
                         options. If values of the keys is None, solvers are run with default settings.
         output_dir (str, optional): Directory where the result CSV will be saved. Defaults to "results".
 
@@ -56,7 +57,14 @@ def initialize_csv(timestamp: str, output_dir: str) -> str:
     output_file = os.path.join(output_dir, f"results_{timestamp}.csv")
 
     fieldnames = [
-        "model", "solver", "status", "objective_value", "runtime", "memory_used_MB", "error"
+        "execution_alias",
+        "model",
+        "solver",
+        "status",
+        "objective_value",
+        "runtime",
+        "memory_used_MB",
+        "error",
     ]
 
     with open(output_file, mode="w", newline="") as file:
@@ -66,27 +74,35 @@ def initialize_csv(timestamp: str, output_dir: str) -> str:
     return output_file
 
 
-def run_solver_on_model(mps_file: str, execution_alias: str, parameters: Dict[str, Dict]) -> Dict:
+def run_solver_on_model(
+    mps_file: str, execution_alias: str, parameters: Dict[str, Dict]
+) -> Dict:
     """Runs a solver on a given model and handles errors."""
 
-    solver = SolverFactory.get_solver(parameters['solver_name'])
+    solver = SolverFactory.get_solver(parameters["solver_name"])
 
     try:
         solver_params = {k: v for k, v in parameters.items() if k != "solver_name"}
-        solver.solve(mps_file, solver_params) if solver_params else solver.solve(mps_file)
+        solver.solve(mps_file, solver_params) if solver_params else solver.solve(
+            mps_file
+        )
 
         result = solver.get_results()
-        result.update({
-            "model": os.path.basename(mps_file),
-            "solver": parameters['solver_name'],
-            "execution_alias": execution_alias
-        })
+        result.update(
+            {
+                "model": os.path.basename(mps_file),
+                "solver": parameters["solver_name"],
+                "execution_alias": execution_alias,
+            }
+        )
 
     except Exception as e:
-        logging.error(f"Error when running {parameters['solver_name']} on {mps_file}: {str(e)}")
+        logging.error(
+            f"Error when running {parameters['solver_name']} on {mps_file}: {str(e)}"
+        )
         result = {
             "model": os.path.basename(mps_file),
-            "solver": parameters['solver_name'],
+            "solver": parameters["solver_name"],
             "execution_alias": execution_alias,
             "status": "error",
             "objective_value": None,
@@ -101,9 +117,16 @@ def run_solver_on_model(mps_file: str, execution_alias: str, parameters: Dict[st
 def append_to_csv(output_file: str, result: Dict) -> None:
     """Appends a result dictionary to the CSV file."""
     fieldnames = [
-        "execution_alias", "model", "solver", "status", "objective_value", "runtime", "memory_used_MB", "error"
+        "execution_alias",
+        "model",
+        "solver",
+        "status",
+        "objective_value",
+        "runtime",
+        "memory_used_MB",
+        "error",
     ]
 
-    with open(output_file, mode="a", newline='') as file:
+    with open(output_file, mode="a", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writerow(result)

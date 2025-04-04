@@ -1,5 +1,4 @@
-
-
+from solverarena.solvers.cbc_solver import CBCSolver
 from solverarena.solvers.glop_solver import GLOPSolver
 from solverarena.solvers.gurobi_solver import GurobiSolver
 from solverarena.solvers.highs_solver import HiGHSSolver
@@ -20,5 +19,7 @@ class SolverFactory:
             return SCIPSolver()
         elif solver_name.lower() == "pdlp":
             return PDLPSolver()
+        elif solver_name.lower() == "cbc":
+            return CBCSolver()
         else:
             raise ValueError(f"Solver {solver_name} not recognized")
