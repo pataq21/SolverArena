@@ -19,7 +19,7 @@ class CBCSolver(Solver):
         self.logger.setLevel(logging.INFO)
 
     @track_performance
-    def run_cbc(self, mps_file_path: str) -> dict[str, any]:
+    def run_cbc(self, mps_file_path: str, options) -> dict[str, any]:
         """
         Solves a given MPS file using the CBC solver via subprocess and parses stdout.
 
@@ -32,9 +32,6 @@ class CBCSolver(Solver):
                                         'error', 'unknown').
                 - "objective_value": The final objective function value (float) if found,
                                     otherwise None.
-                - "error_message": A description of the error if status is 'error',
-                                otherwise None.
-                - "raw_output": The full stdout from the solver for debugging.
         """
         # 1. Check if the MPS file exists
         if not os.path.isfile(mps_file_path):
@@ -42,13 +39,20 @@ class CBCSolver(Solver):
             return {
                 "status": "error",
                 "objective_value": None,
-                "error_message": f"MPS file not found: {mps_file_path}",
-                "raw_output": None,
             }
 
         # 2. Construct the command
 
-        command = ["cbc", mps_file_path, "solve"]
+        command = ["cbc"]
+
+        if options:
+            for key, value in options.items():
+                option_key = f"-{key}"
+                command.append(option_key)
+                command.append(str(value))
+
+        command.append(mps_file_path)
+        command.append("solve")
 
         # 3. Run the solver using subprocess
         try:
@@ -67,8 +71,6 @@ class CBCSolver(Solver):
             return {
                 "status": "error",
                 "objective_value": None,
-                "error_message": "CBC executable not found: cbc",
-                "raw_output": None,
             }
 
         except Exception as e:
@@ -76,8 +78,6 @@ class CBCSolver(Solver):
             return {
                 "status": "error",
                 "objective_value": None,
-                "error_message": f"Subprocess execution failed: {e}",
-                "raw_output": None,
             }
 
         # 4. Parse the stdout to find status and objective value
@@ -132,7 +132,7 @@ class CBCSolver(Solver):
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.logger.info(f"[{current_time}] Running CBC on {mps_file}...")
 
-        self.result = self.run_cbc(mps_file)
+        self.result = self.run_cbc(mps_file, options)
 
     def get_results(self):
         if self.result is None:
