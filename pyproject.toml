@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "solverarena"
+version = "0.2.3"
+description = "A library to run and compare optimization models"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [{ name = "Javier Berga García", email = "pataq21@gmail.com" }]
+dependencies = ["memory-profiler"]
+
+[project.urls]
+Homepage = "https://github.com/pataq21/SolverArena"
+Repository = "https://github.com/pataq21/SolverArena"
+
+
+[project.optional-dependencies]
+highs = ["highspy"]
+gurobi = ["gurobipy"]
+scip = ["pyscipopt"]
+ortools = ["ortools"]
+all_solvers = [
+    "solverarena[highs]",   # Referencia a los otros extras
+    "solverarena[gurobi]",
+    "solverarena[scip]",
+    "solverarena[ortools]",
+]
+dev = ["pytest", "twine", "highspy", "gurobipy", "pyscipopt", "ortools"]
+
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = ["tests"]
