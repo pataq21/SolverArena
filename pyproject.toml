@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "solverarena"
-version = "0.2.3"
+version = "0.2.4"
 description = "A library to run and compare optimization models"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -28,7 +28,15 @@ all_solvers = [
     "solverarena[scip]",
     "solverarena[ortools]",
 ]
-dev = ["pytest", "twine", "highspy", "gurobipy", "pyscipopt", "ortools"]
+dev = [
+    "pytest",
+    "twine",
+    "highspy",
+    "gurobipy",
+    "pyscipopt",
+    "ortools",
+    "pytest-mock>=3.14.0",
+]
 
 
 [tool.pytest.ini_options]
