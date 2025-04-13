@@ -22,12 +22,15 @@ def mock_solver():
     }
     return solver
 
+
 @pytest.fixture
 def mock_solver_factory(mocker, mock_solver):
     """Mocks SolverFactory.get_solver to return our mock_solver."""
 
     target = 'solverarena.run.SolverFactory.get_solver'
-    mocker.patch(target, return_value=mock_solver)
+    mock_patch = mocker.patch(target, return_value=mock_solver)
+    return mock_patch
+
 
 @pytest.fixture
 def apply_mock_factory_for_partial_failure(mocker):
@@ -56,7 +59,6 @@ def apply_mock_factory_for_partial_failure(mocker):
 
     target = 'solverarena.run.SolverFactory.get_solver'
     mocker.patch(target, side_effect=side_effect_logic)
-
 
 
 # --- Tests for run_solver_on_model ---
@@ -155,7 +157,6 @@ def test_run_solver_on_model_factory_error(mocker):
     target = 'solverarena.run.SolverFactory.get_solver'
     mocker.patch(target, side_effect=ValueError(error_message))
 
-
     mocker.patch('os.path.basename', return_value=mps_file)
 
     result = run_solver_on_model(mps_file, execution_alias, parameters)
@@ -178,12 +179,13 @@ def setup_test_environment(tmp_path):
     models_dir.mkdir()
     mps_file1 = models_dir / "m1.mps"
     mps_file2 = models_dir / "m2.mps"
-    mps_file1.touch() # Create empty files
+    mps_file1.touch()  # Create empty files
     mps_file2.touch()
 
     output_dir = tmp_path / "results"
 
     return {"mps_files": [str(mps_file1), str(mps_file2)], "output_dir": output_dir}
+
 
 def test_run_models_success_basic(mocker, setup_test_environment, mock_solver_factory, mock_solver):
     """Verifies a basic successful run of run_models with 1 model, 1 solver."""
@@ -196,7 +198,7 @@ def test_run_models_success_basic(mocker, setup_test_environment, mock_solver_fa
     results_list = run_models(mps_files, solvers, output_dir)
     assert os.path.isdir(output_dir)
     mock_solver_factory.assert_called_once_with("cbc")
-    mock_solver.solve.assert_called_once_with(mps_files[0]) 
+    mock_solver.solve.assert_called_once_with(mps_files[0])
 
     # Verify the returned result list
     assert len(results_list) == 1
@@ -230,7 +232,6 @@ def test_run_models_multiple_solvers_models(mocker, setup_test_environment, mock
 
     mocker.patch('os.path.isfile', return_value=True)
 
-
     results_list = run_models(mps_files, solvers, output_dir)
 
     assert mock_solver.solve.call_count == 4
@@ -240,7 +241,6 @@ def test_run_models_multiple_solvers_models(mocker, setup_test_environment, mock
         call(mps_files[0], {'TimeLimit': 60}), call(mps_files[1], {'TimeLimit': 60}),
     ]
     mock_solver.solve.assert_has_calls(expected_calls, any_order=True)
-
 
     assert len(results_list) == 4
 
@@ -264,6 +264,7 @@ def test_run_models_mps_file_not_found(mocker, setup_test_environment):
     with pytest.raises(FileNotFoundError, match=match_pattern):
         run_models(mps_files, solvers, output_dir)
 
+
 def test_run_models_invalid_solver_config(mocker, setup_test_environment):
     """Verifies that ValueError is raised if solver config is invalid."""
     mps_files = setup_test_environment["mps_files"]
@@ -275,6 +276,7 @@ def test_run_models_invalid_solver_config(mocker, setup_test_environment):
 
     with pytest.raises(ValueError, match="Invalid configuration for alias 'bad_alias'"):
         run_models(mps_files, solvers, output_dir)
+
 
 def test_run_models_partial_failure(mocker, setup_test_environment, apply_mock_factory_for_partial_failure):
     """Verifies that it continues if one solver fails, but logs the error."""
