@@ -4,6 +4,7 @@ import logging
 
 from solverarena.solvers.solver import Solver
 from solverarena.solvers.utils import track_performance
+from typing import Dict, Any, Optional
 
 
 class GurobiSolver(Solver):
@@ -44,13 +45,13 @@ class GurobiSolver(Solver):
             "solver": "gurobi"
         }
 
-    def solve(self, mps_file, options=None):
+    def solve(self, mps_file, params: Optional[Dict[str, Any]]):
         """
         Solves the optimization problem using the Gurobi solver.
 
         Args:
             mps_file (str): The path to the MPS file containing the model.
-            options (dict, optional): A dictionary of solver options to configure Gurobi.
+            params (dict, optional): A dictionary of solver options to configure Gurobi.
 
         Raises:
             FileNotFoundError: If the provided MPS file does not exist.
@@ -62,8 +63,8 @@ class GurobiSolver(Solver):
 
             # Read the model into the environment
             with gp.read(mps_file, env) as model:
-                if options:
-                    for key, value in options.items():
+                if params:
+                    for key, value in params.items():
                         model.setParam(key, value)
                 current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 self.logger.info(f"[{current_time}] Running the Gurobi solver on {mps_file}...")

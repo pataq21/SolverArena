@@ -4,6 +4,7 @@ import logging
 
 from solverarena.solvers.solver import Solver
 from solverarena.solvers.utils import track_performance
+from typing import Dict, Any, Optional
 
 
 class HiGHSSolver(Solver):
@@ -43,13 +44,13 @@ class HiGHSSolver(Solver):
             "solver": "highs"
         }
 
-    def solve(self, mps_file, options=None):
+    def solve(self, mps_file, params: Optional[Dict[str, Any]]):
         """
         Solves the optimization problem using the HiGHS solver.
 
         Args:
             mps_file (str): The path to the MPS file containing the model.
-            options (dict, optional): A dictionary of solver options to configure HiGHS.
+            params (dict, optional): A dictionary of solver options to configure HiGHS.
 
         Raises:
             FileNotFoundError: If the provided MPS file does not exist.
@@ -60,8 +61,8 @@ class HiGHSSolver(Solver):
 
         highs.setOptionValue('log_to_console', False)
 
-        if options:
-            for key, value in options.items():
+        if params:
+            for key, value in params.items():
                 highs.setOptionValue(key, value)
 
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

@@ -10,7 +10,10 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [{ name = "Javier Berga García", email = "pataq21@gmail.com" }]
-dependencies = ["memory-profiler"]
+dependencies = [
+    "memory-profiler",
+    "pulp>=3.1.1",
+]
 
 [project.urls]
 Homepage = "https://github.com/pataq21/SolverArena"
@@ -43,3 +46,8 @@ dev = [
 minversion = "6.0"
 addopts = "-ra -q"
 testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["solverarena*"]
+exclude = ["results*", "tests*"]

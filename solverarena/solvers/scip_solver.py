@@ -3,6 +3,7 @@ import pyscipopt as scip
 import logging
 from solverarena.solvers.solver import Solver
 from solverarena.solvers.utils import track_performance
+from typing import Dict, Any, Optional
 
 
 class SCIPSolver(Solver):
@@ -42,13 +43,13 @@ class SCIPSolver(Solver):
             "solver": "scip"
         }
 
-    def solve(self, mps_file, options=None):
+    def solve(self, mps_file, params: Optional[Dict[str, Any]] = None):
         """
         Solves the optimization problem using the SCIP solver.
 
         Args:
             mps_file (str): The path to the MPS file containing the model.
-            options (dict, optional): A dictionary of solver options to configure SCIP.
+            params (dict, optional): A dictionary of solver options to configure SCIP.
 
         Raises:
             FileNotFoundError: If the provided MPS file does not exist.
@@ -61,8 +62,8 @@ class SCIPSolver(Solver):
             model.readProblem(mps_file)
             model.setParam('display/verblevel', 0)
             # Apply solver options if any
-            if options:
-                for key, value in options.items():
+            if params:
+                for key, value in params.items():
                     model.setParam(key, value)
 
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

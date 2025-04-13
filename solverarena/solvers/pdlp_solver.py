@@ -5,6 +5,7 @@ from ortools.linear_solver.python import model_builder
 
 from solverarena.solvers.solver import Solver
 from solverarena.solvers.utils import track_performance
+from typing import Dict, Any, Optional
 
 
 class PDLPSolver(Solver):
@@ -38,13 +39,13 @@ class PDLPSolver(Solver):
             "solver": "PDLP"
         }
 
-    def solve(self, mps_file, options=None):
+    def solve(self, mps_file, params: Optional[Dict[str, Any]]):
         """
         Solves the optimization problem using the PDLP solver.
 
         Args:
             mps_file (str): The path to the MPS file containing the model.
-            options (dict, optional): A dictionary of solver options to configure PDLP.
+            params (dict, optional): A dictionary of solver options to configure PDLP.
 
         Raises:
             FileNotFoundError: If the provided MPS file does not exist.
@@ -54,8 +55,8 @@ class PDLPSolver(Solver):
         model.import_from_mps_file(mps_file)
         pdlp = model_builder.ModelSolver('PDLP')
 
-        if options:
-            for key, value in options.items():
+        if params:
+            for key, value in params.items():
                 if key == 'time_limit':
                     pdlp.set_time_limit_in_seconds(value)
                 else:

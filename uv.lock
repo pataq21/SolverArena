@@ -492,6 +492,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pulp"
+version = "3.1.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/fb/92/bf4b947ec8aac629b835b588e70664c1d0150a8369f798b6c5adb32e39ba/pulp-3.1.1.tar.gz", hash = "sha256:300a330e917c9ca9ac7fda6f5849bbf30d489c368117f197a3e3fd0bc1966d95", size = 16294046 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f5/78/54928786de173be3210963d198e4a7d037f9bf5dd327430090bf6c52e152/pulp-3.1.1-py3-none-any.whl", hash = "sha256:ad9d46afaf78a708270a2fa9b38e56536584c048dfbd7a6dbc719abee1051261", size = 16375371 },
+]
+
+[[package]]
 name = "pycparser"
 version = "2.22"
 source = { registry = "https://pypi.org/simple" }
@@ -672,11 +681,11 @@ wheels = [
 
 [[package]]
 name = "solverarena"
-version = "0.2.3"
+version = "0.2.4"
 source = { editable = "." }
 dependencies = [
     { name = "memory-profiler" },
-    { name = "pytest-mock" },
+    { name = "pulp" },
 ]
 
 [package.optional-dependencies]
@@ -692,6 +701,7 @@ dev = [
     { name = "ortools" },
     { name = "pyscipopt" },
     { name = "pytest" },
+    { name = "pytest-mock" },
     { name = "twine" },
 ]
 gurobi = [
@@ -716,10 +726,11 @@ requires-dist = [
     { name = "memory-profiler" },
     { name = "ortools", marker = "extra == 'dev'" },
     { name = "ortools", marker = "extra == 'ortools'" },
+    { name = "pulp", specifier = ">=3.1.1" },
     { name = "pyscipopt", marker = "extra == 'dev'" },
     { name = "pyscipopt", marker = "extra == 'scip'" },
     { name = "pytest", marker = "extra == 'dev'" },
-    { name = "pytest-mock", specifier = ">=3.14.0" },
+    { name = "pytest-mock", marker = "extra == 'dev'", specifier = ">=3.14.0" },
     { name = "solverarena", extras = ["gurobi"], marker = "extra == 'all-solvers'" },
     { name = "solverarena", extras = ["highs"], marker = "extra == 'all-solvers'" },
     { name = "solverarena", extras = ["ortools"], marker = "extra == 'all-solvers'" },
