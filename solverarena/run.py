@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Dict, List
 
 from solverarena.solvers.solver_factory import SolverFactory
+from solverarena.utils import InputValidationError, InputValidator
 
 # Set up basic logging
 logging.basicConfig(level=logging.INFO)
@@ -21,6 +22,8 @@ CSV_FIELDNAMES = [
     "memory_used_MB",
     "error",
 ]
+
+
 def run_models(
     mps_files: List[str], solvers: Dict[str, Dict], output_dir: str = "results"
 ) -> List[Dict]:
@@ -38,19 +41,17 @@ def run_models(
         list: A list of dictionaries with results for each model-solver pair.
 
     Raises:
-        FileNotFoundError: If any MPS file does not exist.
-        ValueError: If an unsupported solver is provided.
+        InputValidationError: If the input parameters fail validation.
+        IOError: If there's an error writing the results file.
+        Exception: For other unexpected errors during execution.
 
     """
-    for mps_file in mps_files:
-        if not os.path.isfile(mps_file):
-            logger.error(f"Input MPS file not found: {mps_file}")
-            raise FileNotFoundError(f"MPS file not found: {mps_file}")
-        
-    for alias, params in solvers.items():
-        if not isinstance(params, dict) or "solver_name" not in params:
-            logger.error(f"Invalid configuration for alias '{alias}'. Must be a dict with 'solver_name'.")
-            raise ValueError(f"Invalid configuration for alias '{alias}'. Missing 'solver_name'.")
+    try:
+        validator = InputValidator()
+        validator.validate(mps_files, solvers)
+    except InputValidationError as e:
+        logger.error(f"Input validation failed:\n{e}")
+        raise
 
     os.makedirs(output_dir, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -62,27 +63,30 @@ def run_models(
         with open(output_file, mode="w", newline="", encoding='utf-8') as file:
             writer = csv.DictWriter(file, fieldnames=CSV_FIELDNAMES)
             writer.writeheader()
+
             for execution_alias, parameters in solvers.items():
                 solver_name = parameters["solver_name"]
                 logger.info(f"--- Running Alias: {execution_alias} (Solver: {solver_name}) ---")
                 for mps_file in mps_files:
                     model_name = os.path.basename(mps_file)
                     logger.info(f"Processing model: {model_name}")
+
                     result = run_solver_on_model(mps_file, execution_alias, parameters)
                     results.append(result)
+
                     row_to_write = {key: result.get(key) for key in CSV_FIELDNAMES}
                     writer.writerow(row_to_write)
-
 
     except IOError as e:
         logger.error(f"Error writing results to CSV file {output_file}: {e}")
         raise
     except Exception as e:
-        logger.error(f"An unexpected error occurred during the run: {e}")
+        logger.error(f"An unexpected error occurred during the run: {e}", exc_info=True)
         raise
 
     logger.info(f"Finished processing all models. Results saved to {output_file}")
     return results
+
 
 def run_solver_on_model(
     mps_file: str, execution_alias: str, parameters: Dict[str, Dict]
@@ -102,7 +106,6 @@ def run_solver_on_model(
         "error": "Initialization failed",
     }
 
-
     try:
         solver = SolverFactory.get_solver(solver_name)
         result_base["error"] = None
@@ -121,13 +124,11 @@ def run_solver_on_model(
         logger.info(f"Finished {solver_name} on {model_name}. Status: {result.get('status')}, \
                     Objective: {result.get('objective_value')}")
 
-
     except Exception as e:
         error_message = f"Error running {solver_name} on {model_name}: {type(e).__name__} - {str(e)}"
-        logger.error(error_message)
+        logger.error(error_message, exc_info=True)
         result = result_base.copy()
         result["error"] = error_message
 
     final_result = {key: result.get(key) for key in CSV_FIELDNAMES}
     return final_result
-

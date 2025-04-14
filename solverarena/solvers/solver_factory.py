@@ -1,3 +1,4 @@
+from typing import List
 from solverarena.solvers.cbc_solver import CBCSolver
 from solverarena.solvers.glop_solver import GLOPSolver
 from solverarena.solvers.gurobi_solver import GurobiSolver
@@ -24,3 +25,26 @@ class SolverFactory:
         else:
             raise ValueError(
                 f"Solver {solver_name} not recognized. Available: {list(SolverFactory._solver_map.keys())}")
+
+    @staticmethod
+    def is_solver_supported(solver_name: str) -> bool:
+        """
+        Checks if a solver name is recognized by the factory without instantiating it.
+
+        Args:
+            solver_name: The name of the solver to check.
+
+        Returns:
+            True if the solver name is supported, False otherwise.
+        """
+        return solver_name.lower() in SolverFactory._solver_map
+
+    @staticmethod
+    def get_available_solvers() -> List[str]:
+        """
+        Returns a list of names of all available/supported solvers.
+
+        Returns:
+            A list of strings, where each string is a supported solver name.
+        """
+        return list(SolverFactory._solver_map.keys())

@@ -5,6 +5,7 @@ import csv
 from unittest.mock import MagicMock, patch, call
 
 from solverarena.run import run_models, run_solver_on_model, CSV_FIELDNAMES
+from solverarena.utils import InputValidationError
 
 
 # --- Fixtures (Reusable data for tests) ---
@@ -50,9 +51,9 @@ def apply_mock_factory_for_partial_failure(mocker):
     solver_fail.solve.side_effect = Exception(error_msg_internal)
 
     def side_effect_logic(name):
-        if name == 'solver1':
+        if name == 'cbc':
             return solver_ok
-        elif name == 'solver2':
+        elif name == 'highs':
             return solver_fail
         else:
             return MagicMock()
@@ -261,7 +262,7 @@ def test_run_models_mps_file_not_found(mocker, setup_test_environment):
     mocker.patch('os.path.isfile', side_effect=[False, True])
     expected_path_escaped = re.escape(mps_files[0])
     match_pattern = f"MPS file not found: {expected_path_escaped}"
-    with pytest.raises(FileNotFoundError, match=match_pattern):
+    with pytest.raises(InputValidationError, match=match_pattern):
         run_models(mps_files, solvers, output_dir)
 
 
@@ -274,7 +275,7 @@ def test_run_models_invalid_solver_config(mocker, setup_test_environment):
 
     mocker.patch('os.path.isfile', return_value=True)
 
-    with pytest.raises(ValueError, match="Invalid configuration for alias 'bad_alias'"):
+    with pytest.raises(InputValidationError, match="Missing 'solver_name' key for alias 'bad_alias'."):
         run_models(mps_files, solvers, output_dir)
 
 
@@ -283,8 +284,8 @@ def test_run_models_partial_failure(mocker, setup_test_environment, apply_mock_f
     mps_files = setup_test_environment["mps_files"][:1]
     output_dir = setup_test_environment["output_dir"]
     solvers = {
-        "ok_solver": {"solver_name": "solver1"},
-        "fail_solver": {"solver_name": "solver2"}
+        "ok_solver": {"solver_name": "cbc"},
+        "fail_solver": {"solver_name": "highs"}
     }
     error_msg = "Solver 2 crashed"
     mocker.patch('os.path.isfile', return_value=True)
