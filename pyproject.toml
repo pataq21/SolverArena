@@ -10,10 +10,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [{ name = "Javier Berga García", email = "pataq21@gmail.com" }]
-dependencies = [
-    "memory-profiler",
-    "pulp>=3.1.1",
-]
+dependencies = ["memory-profiler", "pulp>=3.1.1"]
 
 [project.urls]
 Homepage = "https://github.com/pataq21/SolverArena"
@@ -26,7 +23,7 @@ gurobi = ["gurobipy"]
 scip = ["pyscipopt"]
 ortools = ["ortools"]
 all_solvers = [
-    "solverarena[highs]",   # Referencia a los otros extras
+    "solverarena[highs]",
     "solverarena[gurobi]",
     "solverarena[scip]",
     "solverarena[ortools]",

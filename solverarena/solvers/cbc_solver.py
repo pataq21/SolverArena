@@ -9,7 +9,7 @@ from typing import Dict, Any, Optional
 from solverarena.solvers.solver import Solver
 from solverarena.solvers.utils import track_performance
 
-CSV_FIELDNAMES = ["execution_alias", "model", "solver", "status",
+CSV_FIELDNAMES = ["solver", "status",
                   "objective_value", "runtime", "memory_used_MB", "error"]
 
 
