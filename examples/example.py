@@ -6,8 +6,17 @@ if __name__ == "__main__":
     ]
 
     solvers = {
-        "glop": {
-            "solver_name": "pdlp",
+        "highs_default": {
+            "solver_name": "highs",
+            "presolve": "on",
+            "time_limit": 3600,
+            "solver": "ipm"
         },
+        "highs_no_presolve": {
+            "solver_name": "highs",
+            "presolve": "off",
+            "time_limit": 1800,
+            "solver": "simplex"
+        }
     }
     results = run_models(mps_files, solvers)

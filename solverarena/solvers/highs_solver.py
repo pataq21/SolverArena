@@ -34,12 +34,12 @@ class HiGHSSolver(Solver):
         Returns:
             dict: A dictionary containing the solver status and objective value.
         """
-        highs.run()  # Execute the solver
+        highs.run()
         model_status = highs.getModelStatus()
         obj_value = highs.getObjectiveValue()
 
         return {
-            "status": model_status,
+            "status": self._translate_status(model_status),
             "objective_value": obj_value,
             "solver": "highs"
         }
@@ -59,8 +59,6 @@ class HiGHSSolver(Solver):
         highs = highspy.Highs()
         highs.readModel(mps_file)
 
-        highs.setOptionValue('log_to_console', False)
-
         if params:
             for key, value in params.items():
                 highs.setOptionValue(key, value)
@@ -69,7 +67,6 @@ class HiGHSSolver(Solver):
         self.logger.info(f"[{current_time}] Running the HiGHS solver on {mps_file}...")
 
         self.result = self.run_highs(highs)
-        del highs
         self.logger.info(f"Solver completed with status: {self.result['status']}.")
 
     def get_results(self):
@@ -82,3 +79,35 @@ class HiGHSSolver(Solver):
         if self.result is None:
             self.logger.warning("No problem has been solved yet. The result is empty.")
         return self.result
+
+    def _translate_status(self, native_status: Optional[highspy.HighsModelStatus]) -> str:
+        """Translates HiGHS native status to standard status."""
+        if native_status is None:
+            return "error"
+
+        if native_status == highspy.HighsModelStatus.kOptimal:
+            return "optimal"
+        elif native_status == highspy.HighsModelStatus.kInfeasible:
+            return "infeasible"
+        elif native_status == highspy.HighsModelStatus.kUnbounded:
+            return "unbounded"
+        elif native_status in [
+            highspy.HighsModelStatus.kTimeLimit,
+            highspy.HighsModelStatus.kIterationLimit,
+            highspy.HighsModelStatus.kObjectiveBound,
+            highspy.HighsModelStatus.kObjectiveTarget
+        ]:
+            return "limit_reached"
+        elif native_status in [
+            highspy.HighsModelStatus.kNotset,
+            highspy.HighsModelStatus.kLoadError,
+            highspy.HighsModelStatus.kModelError,
+            highspy.HighsModelStatus.kPresolveError,
+            highspy.HighsModelStatus.kSolveError,
+            highspy.HighsModelStatus.kPostsolveError,
+            highspy.HighsModelStatus.kUnknown,
+        ]:
+            return "error"
+        else:
+            self.logger.warning(f"Unhandled HiGHS native status: {native_status}. Reporting as error.")
+            return "error"
