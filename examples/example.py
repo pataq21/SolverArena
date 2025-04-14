@@ -6,9 +6,8 @@ if __name__ == "__main__":
     ]
 
     solvers = {
-        "cbc": {
-            "solver_name": "cbc",
+        "glop": {
+            "solver_name": "pdlp",
         },
     }
-
     results = run_models(mps_files, solvers)

@@ -39,7 +39,7 @@ class GLOPSolver(Solver):
             "solver": "GLOP"
         }
 
-    def solve(self, mps_file, params: Optional[Dict[str, Any]]):
+    def solve(self, mps_file, params: Optional[Dict[str, Any]] = None):
         """
         Solves the optimization problem using the GLOP solver.
 

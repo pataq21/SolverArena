@@ -6,7 +6,6 @@ from solverarena.solvers.solver_factory import SolverFactory
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-# --- Nueva Clase Validadora ---
 
 
 class InputValidationError(ValueError):

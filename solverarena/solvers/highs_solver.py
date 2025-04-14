@@ -44,7 +44,7 @@ class HiGHSSolver(Solver):
             "solver": "highs"
         }
 
-    def solve(self, mps_file, params: Optional[Dict[str, Any]]):
+    def solve(self, mps_file, params: Optional[Dict[str, Any]] = None):
         """
         Solves the optimization problem using the HiGHS solver.
 
