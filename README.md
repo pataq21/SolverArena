@@ -36,7 +36,7 @@ To install the library from PyPI, you can use `pipenv` with one of the following
 To use the library, you can refer to the example folder, which contains a basic implementation. Here is an example of how to use `arena_solver`:
 
 ```python
-from solverarena.run import run_models
+from solverarena import run_models
 
 if __name__ == "__main__":
     mps_files = [

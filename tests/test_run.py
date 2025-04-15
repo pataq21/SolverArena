@@ -4,7 +4,7 @@ import os
 import csv
 from unittest.mock import MagicMock, patch, call
 
-from solverarena.run import run_models, run_solver_on_model, CSV_FIELDNAMES
+from solverarena.core import run_models, run_solver_on_model, CSV_FIELDNAMES
 from solverarena.utils import InputValidationError
 
 
@@ -28,7 +28,7 @@ def mock_solver():
 def mock_solver_factory(mocker, mock_solver):
     """Mocks SolverFactory.get_solver to return our mock_solver."""
 
-    target = 'solverarena.run.SolverFactory.get_solver'
+    target = 'solverarena.core.SolverFactory.get_solver'
     mock_patch = mocker.patch(target, return_value=mock_solver)
     return mock_patch
 
@@ -58,7 +58,7 @@ def apply_mock_factory_for_partial_failure(mocker):
         else:
             return MagicMock()
 
-    target = 'solverarena.run.SolverFactory.get_solver'
+    target = 'solverarena.core.SolverFactory.get_solver'
     mocker.patch(target, side_effect=side_effect_logic)
 
 
@@ -155,7 +155,7 @@ def test_run_solver_on_model_factory_error(mocker):
     parameters = {"solver_name": "unknown_solver"}
     error_message = "Solver not found"
 
-    target = 'solverarena.run.SolverFactory.get_solver'
+    target = 'solverarena.core.SolverFactory.get_solver'
     mocker.patch(target, side_effect=ValueError(error_message))
 
     mocker.patch('os.path.basename', return_value=mps_file)
