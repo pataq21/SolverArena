@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "solverarena"
-version = "0.2.4"
+version = "0.2.6"
 description = "A library to run and compare optimization models"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [{ name = "Javier Berga García", email = "pataq21@gmail.com" }]
-dependencies = ["memory-profiler", "pulp>=3.1.1"]
+dependencies = ["build>=1.2.2.post1", "memory-profiler", "pulp>=3.1.1"]
 
 [project.urls]
 Homepage = "https://github.com/pataq21/SolverArena"

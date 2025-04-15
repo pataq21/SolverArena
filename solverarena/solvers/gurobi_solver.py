@@ -58,7 +58,6 @@ class GurobiSolver(Solver):
             ValueError: If an invalid option is passed in the options dictionary.
         """
         with gp.Env(empty=True) as env:
-            env.setParam('OutputFlag', 0)  # Suppress output
             env.start()  # Start the Gurobi environment
 
             # Read the model into the environment
