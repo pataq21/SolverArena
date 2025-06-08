@@ -1,4 +1,4 @@
-from solverarena.run import run_models
+from solverarena import run_models
 
 if __name__ == "__main__":
     mps_files = [
