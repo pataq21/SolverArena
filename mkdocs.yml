@@ -1,0 +1,20 @@
+site_name: SolverArena
+site_description: "A Python library to run and compare optimization models with multiple solvers."
+site_author: Javier Berga García
+repo_url: https://github.com/pataq21/SolverArena
+repo_name: GitHub
+nav:
+  - Home: index.md
+  - Getting Started: getting_started.md
+  - Usage:
+      - Examples: examples.md
+      - API Reference: api.md
+  - Development:
+      - Contributing: contributing.md
+      - Changelog: changelog.md
+  - License: license.md
+theme: readthedocs
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/pataq21/SolverArena
