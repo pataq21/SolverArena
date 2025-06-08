@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
     solvers = {
         "highs_default": {
-            "solver_name": "cbc",
+            "solver_name": "highs",
             "presolve": "on",
             "time_limit": 3600,
             "solver": "ipm"
