@@ -33,4 +33,4 @@ jobs:
       - name: Build and deploy
         run: mkdocs gh-deploy --force
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
