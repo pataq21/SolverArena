@@ -132,3 +132,7 @@ def run_solver_on_model(
 
     final_result = {key: result.get(key) for key in CSV_FIELDNAMES}
     return final_result
+
+
+def get_available_solvers():
+    return SolverFactory.get_available_solvers()

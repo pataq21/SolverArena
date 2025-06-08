@@ -325,3 +325,17 @@ def test_run_models_empty_models_list(mocker, setup_test_environment):
 
     with pytest.raises(InputValidationError, match="mps_files list cannot be empty"):
         run_models(mps_files, solvers, output_dir)
+
+
+def test_get_available_solvers_returns_list_of_strings(mocker):
+    """Verifies that get_available_solvers returns a list of solver names."""
+    mock_solver_names = ["cbc", "highs", "gurobi"]
+    mocker.patch(
+        "solverarena.core.SolverFactory.get_available_solvers",
+        return_value=mock_solver_names
+    )
+    from solverarena.core import get_available_solvers
+    solvers = get_available_solvers()
+    assert isinstance(solvers, list)
+    assert all(isinstance(s, str) for s in solvers)
+    assert solvers == mock_solver_names
