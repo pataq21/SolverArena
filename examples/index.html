@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Javier Berga García" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Examples - SolverArena</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Examples";
+        var mkdocs_page_input_path = "examples.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> SolverArena
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../getting_started/">Getting Started</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Usage</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Examples</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-run-multiple-solvers-on-a-single-model">1. Run Multiple Solvers on a Single Model</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-run-a-solver-with-custom-parameters">2. Run a Solver with Custom Parameters</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-list-available-solvers">3. List Available Solvers</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-export-results-to-csv">4. Export Results to CSV</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../api/">API Reference</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Development</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../changelog/">Changelog</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../license/">License</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">SolverArena</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Usage</li>
+      <li class="breadcrumb-item active">Examples</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/pataq21/SolverArena/edit/master/docs/examples.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="examples">Examples</h1>
+<p>Here are some practical examples to help you get started with SolverArena.</p>
+<hr />
+<h2 id="1-run-multiple-solvers-on-a-single-model">1. Run Multiple Solvers on a Single Model</h2>
+<pre><code class="language-python">from solverarena import run_models
+
+mps_files = [&quot;examples/mps_files/model_dataset100.mps&quot;]
+solvers = {
+    &quot;highs_default&quot;: {&quot;solver_name&quot;: &quot;highs&quot;},
+    &quot;cbc_default&quot;: {&quot;solver_name&quot;: &quot;cbc&quot;}
+}
+
+results = run_models(mps_files, solvers)
+print(results)
+</code></pre>
+<hr />
+<h2 id="2-run-a-solver-with-custom-parameters">2. Run a Solver with Custom Parameters</h2>
+<pre><code class="language-python">from solverarena import run_models
+
+mps_files = [&quot;examples/mps_files/model.mps&quot;]
+solvers = {
+    &quot;highs_ipm&quot;: {&quot;solver_name&quot;: &quot;highs&quot;, &quot;solver&quot;: &quot;ipm&quot;, &quot;time_limit&quot;: 600},
+    &quot;highs_simplex&quot;: {&quot;solver_name&quot;: &quot;highs&quot;, &quot;solver&quot;: &quot;simplex&quot;, &quot;presolve&quot;: &quot;off&quot;}
+}
+
+results = run_models(mps_files, solvers)
+for res in results:
+    print(f&quot;{res['execution_alias']}: status={res['status']}, obj={res['objective_value']}&quot;)
+</code></pre>
+<hr />
+<h2 id="3-list-available-solvers">3. List Available Solvers</h2>
+<pre><code class="language-python">from solverarena import get_available_solvers
+
+print(&quot;Available solvers:&quot;, get_available_solvers())
+</code></pre>
+<hr />
+<h2 id="4-export-results-to-csv">4. Export Results to CSV</h2>
+<p>By default, <code>run_models</code> will export results to a timestamped CSV file in the <code>results/</code> directory. You can specify a custom output directory:</p>
+<pre><code class="language-python">from solverarena import run_models
+
+mps_files = [&quot;examples/mps_files/model_dataset100.mps&quot;]
+solvers = {&quot;highs_default&quot;: {&quot;solver_name&quot;: &quot;highs&quot;}}
+
+results = run_models(mps_files, solvers, output_dir=&quot;my_results&quot;)
+</code></pre>
+<hr />
+<p>For more advanced usage, see the <a href="../api/">API Reference</a> or check the <a href="../getting_started/">Getting Started</a> guide.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../getting_started/" class="btn btn-neutral float-left" title="Getting Started"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../api/" class="btn btn-neutral float-right" title="API Reference">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/pataq21/SolverArena" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../getting_started/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../api/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
