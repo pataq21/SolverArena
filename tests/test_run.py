@@ -313,3 +313,15 @@ def test_run_models_partial_failure(mocker, setup_test_environment, apply_mock_f
         assert rows[0]["status"] == "optimal"
         assert rows[1]["status"] == "error"
         assert error_msg in rows[1]["error"]
+
+
+def test_run_models_empty_models_list(mocker, setup_test_environment):
+    """Verifies that run_models raises InputValidationError if mps_files is empty."""
+    mps_files = []
+    output_dir = setup_test_environment["output_dir"]
+    solvers = {"cbc_default": {"solver_name": "cbc"}}
+
+    mocker.patch('os.path.isfile', return_value=True)
+
+    with pytest.raises(InputValidationError, match="mps_files list cannot be empty"):
+        run_models(mps_files, solvers, output_dir)
