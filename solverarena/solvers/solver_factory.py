@@ -12,6 +12,7 @@ class SolverFactory:
         "scip": "solverarena.solvers.scip_solver.SCIPSolver",
         "pdlp": "solverarena.solvers.pdlp_solver.PDLPSolver",
         "cbc": "solverarena.solvers.cbc_solver.CBCSolver",
+        "copt": "solverarena.solvers.copt_solver.CoptSolver",
     }
     # Caché for already imported classes
     _loaded_solver_classes: Dict[str, Type] = {}

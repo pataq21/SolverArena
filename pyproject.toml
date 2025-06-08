@@ -10,7 +10,12 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [{ name = "Javier Berga García", email = "pataq21@gmail.com" }]
-dependencies = ["build>=1.2.2.post1", "memory-profiler", "pulp>=3.1.1"]
+dependencies = [
+    "build>=1.2.2.post1",
+    "coptpy>=7.2.7",
+    "memory-profiler",
+    "pulp>=3.1.1",
+]
 
 [project.urls]
 Homepage = "https://github.com/pataq21/SolverArena"
@@ -20,6 +25,7 @@ Repository = "https://github.com/pataq21/SolverArena"
 [project.optional-dependencies]
 highs = ["highspy"]
 gurobi = ["gurobipy"]
+copt = ["coptpy"]
 scip = ["pyscipopt"]
 ortools = ["ortools"]
 all_solvers = [
@@ -27,6 +33,7 @@ all_solvers = [
     "solverarena[gurobi]",
     "solverarena[scip]",
     "solverarena[ortools]",
+    "solverarena[copt]",
 ]
 dev = [
     "pytest",

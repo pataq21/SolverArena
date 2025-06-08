@@ -104,6 +104,21 @@ wheels = [
 ]
 
 [[package]]
+name = "coptpy"
+version = "7.2.7"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b9/61/381de54756f939b8545adef601dba3d30fcd51de33c681f952e0fb1f60f1/coptpy-7.2.7-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:27c8798df73e4227301473e9fb9e8c20a1d2bbe97b45c412903361a40b5e97d8", size = 25240432 },
+    { url = "https://files.pythonhosted.org/packages/1f/3e/b59a348b09a113563e4ce4e57c522b59282c2b5603b1d4c22d87ba0b09d3/coptpy-7.2.7-cp312-cp312-manylinux2014_aarch64.whl", hash = "sha256:37cd47128dd5f9d5cc488b84f416dddbb0c8a62f0525286084c994b84f068817", size = 10603120 },
+    { url = "https://files.pythonhosted.org/packages/8e/05/c0406567e41bd00675bb5a62ee25b3da2af0ece41a12f2efb03fb12a0d9d/coptpy-7.2.7-cp312-cp312-manylinux2014_x86_64.whl", hash = "sha256:f05eebfdd355ed2048eae3655202192c03b2e1b5ba3caecabb1bc5e7f19852ae", size = 16588947 },
+    { url = "https://files.pythonhosted.org/packages/b5/9b/ab0e6e5a8eed5351d058a6b027f30117ebe5fef4e38a9191642209c740eb/coptpy-7.2.7-cp312-cp312-win_amd64.whl", hash = "sha256:24547279864ad63891787a5021c7c4ce56a660dde1814f83d244a9402a0a27ca", size = 16225749 },
+    { url = "https://files.pythonhosted.org/packages/27/c6/a402a83abe56ccf1d9fb263386e6bf3c628b57f37129cce4b0057c512149/coptpy-7.2.7-cp313-cp313-macosx_10_9_universal2.whl", hash = "sha256:02511f850bbdc96a0871db8cfc25a49803ef55bbbc51d21ae043c4c2781da3bd", size = 25137475 },
+    { url = "https://files.pythonhosted.org/packages/8f/17/f7397b3760a382283c467f2963aa1a58b3d5cc547c49f16ce85f718c9845/coptpy-7.2.7-cp313-cp313-manylinux2014_aarch64.whl", hash = "sha256:9f438c397cfcf25c5c5a9d5aa89a889fae9531f8dad4b3fb7eefbfd26b68e8f8", size = 10634713 },
+    { url = "https://files.pythonhosted.org/packages/84/58/4e61dcb950b9fd7a46cd6233d0da36b6a35da7eedc33d932d745e42c8f65/coptpy-7.2.7-cp313-cp313-manylinux2014_x86_64.whl", hash = "sha256:84b33b2ebecf8e9367044de94f4094b1b199684efb67394a8bb80b24e71ee311", size = 16632031 },
+    { url = "https://files.pythonhosted.org/packages/b5/1d/542e1f58603a5569910d782c08f078a0777a29b5762a8c222d8f0ac38147/coptpy-7.2.7-cp313-cp313-win_amd64.whl", hash = "sha256:65b76da60413899496605c88957dfd71f6ea13780df5a19c17fe3b6bb979e2f9", size = 16204540 },
+]
+
+[[package]]
 name = "cryptography"
 version = "44.0.2"
 source = { registry = "https://pypi.org/simple" }
@@ -704,10 +719,11 @@ wheels = [
 
 [[package]]
 name = "solverarena"
-version = "0.2.5"
+version = "0.2.6"
 source = { editable = "." }
 dependencies = [
     { name = "build" },
+    { name = "coptpy" },
     { name = "memory-profiler" },
     { name = "pulp" },
 ]
@@ -744,6 +760,7 @@ scip = [
 [package.metadata]
 requires-dist = [
     { name = "build", specifier = ">=1.2.2.post1" },
+    { name = "coptpy", specifier = ">=7.2.7" },
     { name = "gurobipy", marker = "extra == 'dev'" },
     { name = "gurobipy", marker = "extra == 'gurobi'" },
     { name = "highspy", marker = "extra == 'dev'" },
