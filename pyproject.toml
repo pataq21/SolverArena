@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "solverarena"
-version = "0.2.6"
+version = "0.2.7"
 description = "A library to run and compare optimization models"
 readme = "README.md"
 requires-python = ">=3.12"
