@@ -5,6 +5,7 @@ import csv
 from unittest.mock import MagicMock, patch, call
 
 from solverarena.core import run_models, run_solver_on_model, CSV_FIELDNAMES
+from solverarena.models import SolverResult
 from solverarena.utils import InputValidationError
 
 
@@ -13,14 +14,18 @@ from solverarena.utils import InputValidationError
 @pytest.fixture
 def mock_solver():
     """Creates a basic mock of a solver."""
+    mock_result_obj = SolverResult(
+        status="optimal",
+        objective_value=123.45,
+        runtime=0.5,
+        memory_used_MB=100.0,
+        error=None,
+        solver="mock_solver"
+    )
+
     solver = MagicMock()
-    solver.get_results.return_value = {
-        "status": "optimal",
-        "objective_value": 123.45,
-        "runtime": 0.5,
-        "memory_used_MB": 100.0,
-        "error": None,
-    }
+    solver.get_results.return_value = mock_result_obj
+
     return solver
 
 
@@ -39,11 +44,12 @@ def apply_mock_factory_for_partial_failure(mocker):
     Mocks SolverFactory.get_solver to return different mocks
     based on the solver name, simulating one failure.
     """
+    solver_ok_result = SolverResult(
+        status="optimal", objective_value=10, runtime=1,
+        memory_used_MB=50, error=None, solver="highs"
+    )
     solver_ok = MagicMock(name="MockSolverOK_PF")
-    solver_ok.get_results.return_value = {
-        "status": "optimal", "objective_value": 10, "runtime": 1,
-        "memory_used_MB": 50, "error": None,
-    }
+    solver_ok.get_results.return_value = solver_ok_result
     solver_ok.solve = MagicMock()
 
     solver_fail = MagicMock(name="MockSolverFail_PF")
@@ -51,9 +57,9 @@ def apply_mock_factory_for_partial_failure(mocker):
     solver_fail.solve.side_effect = Exception(error_msg_internal)
 
     def side_effect_logic(name):
-        if name == 'cbc':
+        if name == 'highs':
             return solver_ok
-        elif name == 'highs':
+        elif name == 'scip':
             return solver_fail
         else:
             return MagicMock()
@@ -192,19 +198,19 @@ def test_run_models_success_basic(mocker, setup_test_environment, mock_solver_fa
     """Verifies a basic successful run of run_models with 1 model, 1 solver."""
     mps_files = setup_test_environment["mps_files"][:1]
     output_dir = setup_test_environment["output_dir"]
-    solvers = {"cbc_default": {"solver_name": "cbc"}}
+    solvers = {"highs_default": {"solver_name": "highs"}}
 
     mocker.patch('os.path.isfile', return_value=True)
 
     results_list = run_models(mps_files, solvers, output_dir)
     assert os.path.isdir(output_dir)
-    mock_solver_factory.assert_called_once_with("cbc")
+    mock_solver_factory.assert_called_once_with("highs")
     mock_solver.solve.assert_called_once_with(mps_files[0])
 
     # Verify the returned result list
     assert len(results_list) == 1
     assert results_list[0]["model"] == os.path.basename(mps_files[0])
-    assert results_list[0]["execution_alias"] == "cbc_default"
+    assert results_list[0]["execution_alias"] == "highs_default"
     assert results_list[0]["status"] == "optimal"
 
     # Verify CSV file content
@@ -217,7 +223,7 @@ def test_run_models_success_basic(mocker, setup_test_environment, mock_solver_fa
         rows = list(reader)
         assert len(rows) == 1
         assert rows[0]["model"] == os.path.basename(mps_files[0])
-        assert rows[0]["execution_alias"] == "cbc_default"
+        assert rows[0]["execution_alias"] == "highs_default"
         assert rows[0]["status"] == "optimal"
         assert rows[0]["objective_value"] == "123.45"
 
@@ -227,7 +233,7 @@ def test_run_models_multiple_solvers_models(mocker, setup_test_environment, mock
     mps_files = setup_test_environment["mps_files"]
     output_dir = setup_test_environment["output_dir"]
     solvers = {
-        "cbc_alias": {"solver_name": "cbc"},
+        "highs_alias": {"solver_name": "highs"},
         "gurobi_alias": {"solver_name": "gurobi", "TimeLimit": 60}
     }
 
@@ -257,7 +263,7 @@ def test_run_models_mps_file_not_found(mocker, setup_test_environment):
     """Verifies that FileNotFoundError is raised if an MPS file doesn't exist."""
     mps_files = setup_test_environment["mps_files"]
     output_dir = setup_test_environment["output_dir"]
-    solvers = {"cbc_default": {"solver_name": "cbc"}}
+    solvers = {"highs_default": {"solver_name": "highs"}}
 
     mocker.patch('os.path.isfile', side_effect=[False, True])
     expected_path_escaped = re.escape(mps_files[0])
@@ -284,8 +290,8 @@ def test_run_models_partial_failure(mocker, setup_test_environment, apply_mock_f
     mps_files = setup_test_environment["mps_files"][:1]
     output_dir = setup_test_environment["output_dir"]
     solvers = {
-        "ok_solver": {"solver_name": "cbc"},
-        "fail_solver": {"solver_name": "highs"}
+        "ok_solver": {"solver_name": "highs"},
+        "fail_solver": {"solver_name": "scip"}
     }
     error_msg = "Solver 2 crashed"
     mocker.patch('os.path.isfile', return_value=True)
@@ -319,7 +325,7 @@ def test_run_models_empty_models_list(mocker, setup_test_environment):
     """Verifies that run_models raises InputValidationError if mps_files is empty."""
     mps_files = []
     output_dir = setup_test_environment["output_dir"]
-    solvers = {"cbc_default": {"solver_name": "cbc"}}
+    solvers = {"highs_default": {"solver_name": "highs"}}
 
     mocker.patch('os.path.isfile', return_value=True)
 
@@ -329,7 +335,7 @@ def test_run_models_empty_models_list(mocker, setup_test_environment):
 
 def test_get_available_solvers_returns_list_of_strings(mocker):
     """Verifies that get_available_solvers returns a list of solver names."""
-    mock_solver_names = ["cbc", "highs", "gurobi"]
+    mock_solver_names = ["highs", "gurobi"]
     mocker.patch(
         "solverarena.core.SolverFactory.get_available_solvers",
         return_value=mock_solver_names

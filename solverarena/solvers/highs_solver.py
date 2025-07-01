@@ -2,6 +2,7 @@ from datetime import datetime
 import highspy
 import logging
 
+from solverarena.models import SolverResult
 from solverarena.solvers.solver import Solver
 from solverarena.solvers.utils import track_performance
 from typing import Dict, Any, Optional
@@ -22,27 +23,6 @@ class HiGHSSolver(Solver):
         self.result = None
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
-
-    @track_performance
-    def run_highs(self, highs):
-        """
-        Runs the HiGHS solver and tracks performance using the track_performance decorator.
-
-        Args:
-            highs (highspy.Highs): The HiGHS solver instance.
-
-        Returns:
-            dict: A dictionary containing the solver status and objective value.
-        """
-        highs.run()
-        model_status = highs.getModelStatus()
-        obj_value = highs.getObjectiveValue()
-
-        return {
-            "status": self._translate_status(model_status),
-            "objective_value": obj_value,
-            "solver": "highs"
-        }
 
     def solve(self, mps_file, params: Optional[Dict[str, Any]] = None):
         """
@@ -66,8 +46,24 @@ class HiGHSSolver(Solver):
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.logger.info(f"[{current_time}] Running the HiGHS solver on {mps_file}...")
 
-        self.result = self.run_highs(highs)
-        self.logger.info(f"Solver completed with status: {self.result['status']}.")
+        @track_performance
+        def _run_optimization(h):
+            h.run()
+
+        performance_data, solver_outcome = _run_optimization(highs)
+        status = self._translate_status(highs.getModelStatus())
+        obj_val = None
+        if status in ["optimal", "limit_reached"]:
+            obj_val = highs.getObjectiveValue()
+
+        result_data = {
+            "status": status,
+            "objective_value": obj_val,
+            "solver": "highs",
+            **performance_data
+        }
+        self.result = SolverResult(**result_data)
+        self.logger.info(f"Solver completed with status: {self.result.status}.")
 
     def get_results(self):
         """
@@ -78,6 +74,8 @@ class HiGHSSolver(Solver):
         """
         if self.result is None:
             self.logger.warning("No problem has been solved yet. The result is empty.")
+            return SolverResult(error="Solve method not called.", solver="highs")
+
         return self.result
 
     def _translate_status(self, native_status: Optional[highspy.HighsModelStatus]) -> str:

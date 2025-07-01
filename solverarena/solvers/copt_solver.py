@@ -2,6 +2,7 @@ from datetime import datetime
 import coptpy
 import logging
 
+from solverarena.models import SolverResult
 from solverarena.solvers.solver import Solver
 from solverarena.solvers.utils import track_performance
 from typing import Dict, Any, Optional
@@ -22,35 +23,6 @@ class CoptSolver(Solver):
         self.result = None
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
-
-    @track_performance
-    def run_copt(self, model):
-        """
-        Runs the COPT solver and tracks performance using the track_performance decorator.
-
-        Args:
-            model (coptpy.COPT.Model): The COPT model instance.
-
-        Returns:
-            dict: A dictionary containing the solver status and objective value.
-        """
-        status_map = {
-            1: "optimal",
-            2: "infeasible",
-            3: "unbounded",
-            10: "stopped",
-            8: "timeout"
-        }
-        model.solve()
-        status_code = model.status
-        status_str = status_map[status_code]
-        obj_value = model.objval if status_code == coptpy.COPT.OPTIMAL else None
-
-        return {
-            "status": status_str,
-            "objective_value": obj_value,
-            "solver": "copt"
-        }
 
     def solve(self, mps_file: str, params: Optional[Dict[str, Any]] = None):
         """
@@ -78,9 +50,32 @@ class CoptSolver(Solver):
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.logger.info(f"[{current_time}] Running the COPT solver on {mps_file}...")
 
-        self.result = self.run_copt(model)
+        @track_performance
+        def _run_optimization(m):
+            m.solve()
 
-        self.logger.info(f"Solver completed with status: {self.result['status']}.")
+        performance_data, solver_outcome = _run_optimization(model)
+        status_map = {
+            coptpy.COPT.OPTIMAL: "optimal",
+            coptpy.COPT.INFEASIBLE: "infeasible",
+            coptpy.COPT.UNBOUNDED: "unbounded",
+            coptpy.COPT.TIMEOUT: "timeout",
+            coptpy.COPT.INTERRUPTED: "stopped",
+        }
+        status_code = model.status
+        status_str = status_map.get(status_code, f"UNKNOWN_STATUS_{status_code}")
+        obj_value = None
+        if model.hasmipsol:
+            obj_value = model.objval
+        result_data = {
+            "status": status_str,
+            "objective_value": obj_value,
+            "solver": "copt",
+            **performance_data
+        }
+        self.result = SolverResult(**result_data)
+
+        self.logger.info(f"Solver completed with status: {self.result.status}.")
 
     def get_results(self):
         """
@@ -91,4 +86,5 @@ class CoptSolver(Solver):
         """
         if self.result is None:
             self.logger.warning("No problem has been solved yet. The result is empty.")
+            return SolverResult(error="Solve method not called.", solver="copt")
         return self.result

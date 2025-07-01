@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional
 
+from solverarena.models import SolverResult
+
 
 class Solver(ABC):
 
@@ -17,7 +19,7 @@ class Solver(ABC):
         pass
 
     @abstractmethod
-    def get_results(self):
+    def get_results(self) -> SolverResult:
         """
         Returns the results of the last solve run.
 

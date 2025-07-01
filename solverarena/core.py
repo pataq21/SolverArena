@@ -115,7 +115,7 @@ def run_solver_on_model(
 
         solver.solve(mps_file, solver_params) if solver_params else solver.solve(mps_file)
 
-        solver_results = solver.get_results()
+        solver_results = solver.get_results().model_dump()
 
         result = result_base.copy()
         result.update(solver_results)
