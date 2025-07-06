@@ -54,7 +54,8 @@ class SCIPSolver(Solver):
             performance_data, _ = _run_optimization(model)
             native_status = model.getStatus()
             status_str = self._translate_status(native_status)
-
+            best_bound = model.getDualbound()
+            gap = model.getGap()
             obj_value = None
             if model.getNSols() > 0:
                 try:
@@ -65,6 +66,8 @@ class SCIPSolver(Solver):
             result_data = {
                 "status": status_str,
                 "objective_value": obj_value,
+                "best_bound": best_bound,
+                "gap": gap,
                 "solver": "scip",
                 **performance_data
             }

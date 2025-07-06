@@ -67,9 +67,20 @@ class CoptSolver(Solver):
         obj_value = None
         if model.hasmipsol:
             obj_value = model.objval
+        best_bound = None
+        gap = None
+        try:
+            best_bound = model.bestbnd
+            if model.hasmipsol:
+                gap = model.BestGap
+        except coptpy.CoptError:
+            self.logger.warning("Could not retrieve COPT MIP results (bestbnd, mipgap).")
+
         result_data = {
             "status": status_str,
             "objective_value": obj_value,
+            "best_bound": best_bound,
+            "gap": gap,
             "solver": "copt",
             **performance_data
         }

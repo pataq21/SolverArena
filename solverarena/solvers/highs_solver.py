@@ -55,10 +55,15 @@ class HiGHSSolver(Solver):
         obj_val = None
         if status in ["optimal", "limit_reached"]:
             obj_val = highs.getObjectiveValue()
+            info = highs.getInfo()
+        best_bound = info.mip_dual_bound
+        gap = info.mip_gap
 
         result_data = {
             "status": status,
             "objective_value": obj_val,
+            "best_bound": best_bound,
+            "gap": gap,
             "solver": "highs",
             **performance_data
         }

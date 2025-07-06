@@ -10,4 +10,7 @@ class SolverResult(BaseModel):
     error: Optional[str] = None
 
     solver: Optional[str] = None
+
+    best_bound: Optional[float] = None
+    gap: Optional[float] = None
     additional_info: Optional[dict] = None

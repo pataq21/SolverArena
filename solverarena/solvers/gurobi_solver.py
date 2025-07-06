@@ -64,10 +64,20 @@ class GurobiSolver(Solver):
                         obj_val = model.objVal
                     except gp.GurobiError:
                         self.logger.warning("Could not retrieve objective value.")
+                best_bound = None
+                gap = None
+                try:
+                    if model.IsMIP == 1:
+                        best_bound = model.ObjBound
+                        gap = model.MIPGap
+                except gp.GurobiError:
+                    self.logger.warning("Could not retrieve Gurobi MIP results (ObjBound, MIPGap).")
 
                 result_data = {
                     "status": status,
                     "objective_value": obj_val,
+                    "best_bound": best_bound,
+                    "gap": gap,
                     "solver": "gurobi",
                     **performance_data
                 }

@@ -52,12 +52,18 @@ class GLOPSolver(Solver):
         performance_data, status_code = _run_optimization(glop, model)
         status_str = self._translate_status(status_code)
         obj_value = None
+        best_bound = None
+        gap = None
         if status_str == "optimal":
             obj_value = glop.objective_value
+            best_bound = glop.best_objective_bound
+            gap = 0.0
 
         result_data = {
             "status": status_str,
             "objective_value": obj_value,
+            "best_bound": best_bound,
+            "gap": gap,
             "solver": "GLOP",
             **performance_data
         }
