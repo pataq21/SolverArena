@@ -1,6 +1,7 @@
 from datetime import datetime
 import pyscipopt as scip
 import logging
+from solverarena.models import SolverResult
 from solverarena.solvers.solver import Solver
 from solverarena.solvers.utils import track_performance
 from typing import Dict, Any, Optional
@@ -22,27 +23,6 @@ class SCIPSolver(Solver):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
 
-    @track_performance
-    def run_scip(self, model):
-        """
-        Runs the SCIP solver and tracks performance using the track_performance decorator.
-
-        Args:
-            model (pyscipopt.Model): The SCIP model instance.
-
-        Returns:
-            dict: A dictionary containing the solver status and objective value.
-        """
-        model.optimize()  # Execute the solver
-        status = model.getStatus()
-        obj_value = model.getObjVal() if status == "optimal" else None
-
-        return {
-            "status": status.upper(),
-            "objective_value": obj_value,
-            "solver": "scip"
-        }
-
     def solve(self, mps_file, params: Optional[Dict[str, Any]] = None):
         """
         Solves the optimization problem using the SCIP solver.
@@ -55,12 +35,10 @@ class SCIPSolver(Solver):
             FileNotFoundError: If the provided MPS file does not exist.
             ValueError: If an invalid option is passed in the options dictionary.
         """
-        model = scip.Model()  # Create a new SCIP model
 
         try:
-            # Load the MPS file
+            model = scip.Model()
             model.readProblem(mps_file)
-            model.setParam('display/verblevel', 0)
             # Apply solver options if any
             if params:
                 for key, value in params.items():
@@ -69,10 +47,29 @@ class SCIPSolver(Solver):
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             self.logger.info(f"[{current_time}] Running the SCIP solver on {mps_file}...")
 
-            # Run the SCIP solver and store the result
-            self.result = self.run_scip(model)
+            @track_performance
+            def _run_optimization(m):
+                m.optimize()
 
-            self.logger.info(f"Solver completed with status: {self.result['status']}.")
+            performance_data, _ = _run_optimization(model)
+            native_status = model.getStatus()
+            status_str = self._translate_status(native_status)
+
+            obj_value = None
+            if model.getNSols() > 0:
+                try:
+                    obj_value = model.getObjVal()
+                except scip.Exception:
+                    self.logger.warning("SCIP reported a solution but getObjVal() failed.")
+
+            result_data = {
+                "status": status_str,
+                "objective_value": obj_value,
+                "solver": "scip",
+                **performance_data
+            }
+            self.result = SolverResult(**result_data)
+            self.logger.info(f"Solver completed with status: {self.result.status}.")
 
         except FileNotFoundError:
             self.logger.error(f"File {mps_file} not found.")
@@ -87,4 +84,20 @@ class SCIPSolver(Solver):
         """
         if self.result is None:
             self.logger.warning("No problem has been solved yet. The result is empty.")
+            return SolverResult(error="Solve method not called.", solver="scip")
+
         return self.result
+
+    def _translate_status(self, native_status: str) -> str:
+        """Translates SCIP's string status to a standard status."""
+        status_map = {
+            "optimal": "optimal",
+            "infeasible": "infeasible",
+            "unbounded": "unbounded",
+            "timelimit": "limit_reached",
+            "memlimit": "limit_reached",
+            "nodelimit": "limit_reached",
+            "sollimit": "limit_reached",
+            "userinterrupt": "stopped",
+        }
+        return status_map.get(native_status, native_status)
